@@ -1,0 +1,70 @@
+@use '@angular/material' as mat;
+
+::ng-deep .mat-mdc-menu-content {
+  padding: 0 !important;
+}
+
+.notifications-menu {
+  @include mat.list-overrides(
+    (
+      list-item-three-line-container-height: auto,
+    )
+  );
+
+  button[mat-list-item].active {
+    @include mat.list-overrides(
+      (
+        list-item-container-color: var(
+            --mat-sys-surface-container-high
+          ),
+      )
+    );
+  }
+
+  ::ng-deep .mdc-list-item__secondary-text {
+    display: block !important;
+  }
+
+  ::ng-deep .mat-mdc-list-item {
+    padding-bottom: var(
+      --mat-list-list-item-leading-icon-start-space,
+      16px
+    );
+  }
+
+  .notifications-menu-header {
+    background: var(--mat-sys-surface-container);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: var(--mat-list-list-item-leading-icon-start-space, 16px);
+    padding-bottom: 5px;
+  }
+
+  .notifications-menu-header h3 {
+    margin: 0;
+    user-select: none;
+  }
+}
+
+.notification-button {
+  @include mat.fab-overrides(
+    (
+      small-container-color: none,
+      small-container-elevation-shadow: none,
+      small-focus-container-elevation-shadow: none,
+      small-hover-container-elevation-shadow: none,
+      small-pressed-container-elevation-shadow: none,
+    )
+  );
+}
+
+.notification-button.active {
+  @include mat.fab-overrides(
+    (
+      small-container-color: var(--mat-sys-surface-container),
+      small-container-shape: var(--mat-sys-corner-medium)
+        var(--mat-sys-corner-medium) 0 0,
+    )
+  );
+}

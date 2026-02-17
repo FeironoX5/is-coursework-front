@@ -1,0 +1,91 @@
+@if (!program()) {
+  <p class="empty-state">Program not found</p>
+} @else {
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>
+        {{ program()!.previewDto.title }}
+      </mat-card-title>
+      <mat-card-subtitle style="margin-top: 5px">
+        {{ program()!.description }}
+      </mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <h3>Properties</h3>
+      <mat-card-header class="property">
+        <div mat-card-avatar>
+          <mat-icon>event</mat-icon>
+        </div>
+        <mat-card-title>
+          {{ program()!.deadlineReview | date }}
+        </mat-card-title>
+        <mat-card-subtitle>Review deadline</mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-header class="property">
+        <div mat-card-avatar>
+          <mat-icon>event</mat-icon>
+        </div>
+        <mat-card-title>
+          {{ program()!.deadlineNotify | date }}
+        </mat-card-title>
+        <mat-card-subtitle>Notification deadline</mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-header class="property">
+        <div mat-card-avatar>
+          <mat-icon>access_time</mat-icon>
+        </div>
+        <mat-card-title>
+          {{ program()!.durationDays }} days
+        </mat-card-title>
+        <mat-card-subtitle>Duration</mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-header class="property">
+        <div mat-card-avatar>
+          <mat-icon>payments</mat-icon>
+        </div>
+        <mat-card-title>
+          {{ program()!.budgetQuota }} rubles
+        </mat-card-title>
+        <mat-card-subtitle>Budget quota</mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-header class="property">
+        <div mat-card-avatar>
+          <mat-icon>diversity_3</mat-icon>
+        </div>
+        <mat-card-title>
+          {{ program()!.peopleQuota }}
+        </mat-card-title>
+        <mat-card-subtitle>People quota</mat-card-subtitle>
+      </mat-card-header>
+
+      <h3>Goals</h3>
+      @for (goal of objectKeys(program()!.goals); track goal) {
+        <mat-chip
+          >{{ upperCaseFormatter(camelFormatter(goal)) }}:
+          {{ program()!.goals[goal] }}</mat-chip
+        >
+      }
+
+      <h3>Conditions</h3>
+      @for (
+        condition of objectKeys(program()!.conditions);
+        track condition
+      ) {
+        <mat-chip>
+          {{ upperCaseFormatter(camelFormatter(condition)) }}:
+          {{ program()!.conditions[condition] }}
+        </mat-chip>
+      }
+      <div style="margin-top: 25px">
+        <button matButton="filled" (click)="openApplyPopup()">
+          Apply
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+}

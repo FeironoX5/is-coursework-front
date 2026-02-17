@@ -1,0 +1,66 @@
+@use '@angular/material' as mat;
+
+// GENERAL
+
+:root {
+  @include mat.menu-overrides(
+    (
+      container-elevation-shadow: 0px 0px 0px 0.5px
+        var(--mat-sys-surface-container),
+      container-shape: var(--mat-sys-corner-medium) 0
+        var(--mat-sys-corner-medium) var(--mat-sys-corner-medium),
+    )
+  );
+}
+
+html {
+  @include mat.theme(
+    (
+      color: (
+        primary: mat.$azure-palette,
+        tertiary: mat.$violet-palette,
+      ),
+      typography: Roboto,
+      density: 0,
+    )
+  );
+}
+
+body {
+  color-scheme: dark;
+  background-color: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+  font: var(--mat-sys-body-medium);
+  margin: 0;
+  height: 100vh;
+}
+
+*[matRipple] {
+  cursor: pointer;
+}
+
+// COMPONENTS
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.avatar-container {
+  display: flex;
+  flex-direction: row;
+  gap: 7px;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  background: var(--mat-sys-surface-bright);
+  border-radius: 50%;
+}
+
+.avatar-container div {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}

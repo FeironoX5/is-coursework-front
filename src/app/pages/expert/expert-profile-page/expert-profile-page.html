@@ -1,0 +1,61 @@
+<!-- pages/residence-admin/residence-profile-page/residence-profile-page.html -->
+<div class="residence-profile-container">
+  <h1>Профиль резиденции</h1>
+
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Основная информация</mat-card-title>
+
+      @if (residence()?.validationStatus) {
+        <mat-chip
+          [color]="getStatusColor(residence()!.validationStatus)"
+        >
+          {{ getStatusLabel(residence()!.validationStatus) }}
+        </mat-chip>
+      }
+    </mat-card-header>
+
+    <mat-card-content>
+      @if (
+        residence()?.validationStatus === 'rejected' &&
+        residence()?.validationComment
+      ) {
+        <div class="validation-comment error">
+          <strong>Причина отклонения:</strong>
+          <p>{{ residence()!.validationComment }}</p>
+        </div>
+      }
+
+      @if (!canPublish()) {
+        <div class="warning-message">
+          <mat-icon>warning</mat-icon>
+          <p>Публикация заблокирована до одобрения резиденции</p>
+        </div>
+      }
+
+      <app-dynamic-form #profileForm [formConfig]="profileFields" />
+
+      <div class="actions">
+        <button
+          mat-raised-button
+          color="primary"
+          [disabled]="loading()"
+          (click)="saveProfile(profileForm)"
+        >
+          Сохранить
+        </button>
+
+        @if (residence()?.validationStatus === 'rejected') {
+          <button
+            matButton="tonal"
+            color="accent"
+            [disabled]="loading()"
+            (click)="resubmitValidation()"
+          >
+            Отправить повторно
+          </button>
+        }
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

@@ -1,0 +1,60 @@
+<button
+  #but
+  class="notification-button"
+  (click)="isOpened.set(true)"
+  [matMenuTriggerFor]="notificationsMenu"
+  [class.active]="isOpened()"
+  matMiniFab
+  matBadge="7"
+>
+  <mat-icon>notifications</mat-icon>
+</button>
+<mat-menu
+  #notificationsMenu="matMenu"
+  yPosition="below"
+  [overlapTrigger]="false"
+  (closed)="isOpened.set(false)"
+  opened
+>
+  <div class="notifications-menu">
+    <div class="notifications-menu-header">
+      <h3>Notifications</h3>
+      <div class="spacer"></div>
+      <button
+        matIconButton
+        matTooltip="Mark all as read"
+        (click)="markAllAsRead()"
+      >
+        <mat-icon>done_all</mat-icon>
+      </button>
+    </div>
+    <mat-action-list>
+      @for (notification of notifications(); track notification.id) {
+        <button
+          mat-list-item
+          [class.active]="!notification.isRead"
+          lines="3"
+          (click)="handleNotificationClick(notification)"
+        >
+          <mat-icon matListItemIcon>
+            @switch (notification.type) {
+              @case ('system') {
+                settings
+              }
+              @default {
+                done
+              }
+            }
+          </mat-icon>
+          <span matListItemTitle>
+            {{ notification.title }}
+          </span>
+          {{ notification.message }}
+          <span style="opacity: 0.5; display: block; margin-top: 5px">
+            {{ getRelativeTime(notification.timestamp) }}
+          </span>
+        </button>
+      }
+    </mat-action-list>
+  </div>
+</mat-menu>

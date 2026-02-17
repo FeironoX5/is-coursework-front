@@ -1,0 +1,25 @@
+@if (applications().length === 0) {
+  <p class="empty-state">No applications yet</p>
+} @else {
+  @for (application of applications(); track application.id) {
+    <mat-card style="cursor: pointer">
+      <mat-card-header>
+        <div matCardTitle style="display: flex; align-items: center">
+          №{{ application.id }} Program #{{ application.programId }}
+          <mat-chip
+            style="
+              margin-bottom: 5px;
+              margin-top: 5px;
+              margin-left: 5px;
+            "
+          >
+            {{ application.status }}
+          </mat-chip>
+        </div>
+      </mat-card-header>
+      <mat-card-content>
+        {{ application.motivation }}
+      </mat-card-content>
+    </mat-card>
+  }
+}

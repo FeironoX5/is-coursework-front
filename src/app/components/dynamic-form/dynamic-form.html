@@ -1,0 +1,63 @@
+<form [formGroup]="form">
+  @for (field of formConfig(); track field.propertyName) {
+    @switch (field.type) {
+      @case ('input') {
+        <mat-form-field appearance="outline">
+          <mat-label>{{ field.displayName }}</mat-label>
+          <input
+            matInput
+            [type]="field.dataType"
+            [formControlName]="field.propertyName"
+          />
+        </mat-form-field>
+      }
+      @case ('boolean') {
+        <mat-slide-toggle [formControlName]="field.propertyName">
+          {{ field.displayName }}
+        </mat-slide-toggle>
+      }
+      @case ('selectable') {
+        <mat-form-field appearance="outline">
+          <mat-label>{{ field.displayName }}</mat-label>
+          <mat-select [formControlName]="field.propertyName">
+            @for (option of field.options; track option) {
+              <mat-option [value]="option">
+                {{
+                  field.formatter === undefined
+                    ? upperCaseFormatter(enumFormatter(option))
+                    : field.formatter === null
+                      ? option
+                      : field.formatter(option)
+                }}
+              </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      }
+      @case ('autocomplete') {
+        <mat-form-field appearance="outline">
+          <mat-label>{{ field.displayName }}</mat-label>
+          <input
+            matInput
+            [formControlName]="field.propertyName"
+            [matAutocomplete]="auto"
+            (focus)="loadAutocompleteOptions(field)"
+          />
+          <mat-autocomplete #auto="matAutocomplete">
+            @if (autocompleteLoading()) {
+              <mat-progress-bar
+                mode="indeterminate"
+              ></mat-progress-bar>
+            } @else {
+              @for (option of autocompleteOptions(); track option) {
+                <mat-option [value]="$index">
+                  {{ option }}
+                </mat-option>
+              }
+            }
+          </mat-autocomplete>
+        </mat-form-field>
+      }
+    }
+  }
+</form>
