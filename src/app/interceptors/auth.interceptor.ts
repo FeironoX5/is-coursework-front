@@ -3,26 +3,17 @@ import {
   HttpEvent,
   HttpEventType,
   HttpHandlerFn,
+  HttpInterceptorFn,
   HttpRequest,
 } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
-import { AuthService } from '../services/auth-service';
 
-export function authInterceptor(
-  req: HttpRequest<unknown>,
-  next: HttpHandlerFn
-): Observable<HttpEvent<unknown>> {
-  const token = AuthService.getToken();
-
-  const authReq = token
-    ? req.clone({
-        setHeaders: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-    : req;
-
-  console.log(authReq);
-
-  return next(authReq);
-}
+export const authInterceptor: HttpInterceptorFn = (req, next) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    req = req.clone({
+      setHeaders: { Authorization: `Bearer ${token}` },
+    });
+  }
+  return next(req);
+};

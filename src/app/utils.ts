@@ -1,6 +1,6 @@
-import { UserRole } from './models/user.model';
 import { Router } from '@angular/router';
 import { roleFormatter } from './formatters';
+import { UserRole } from './models';
 
 export const getProfileUrlTree = (
   userRole: UserRole,

@@ -1,0 +1,76 @@
+<!-- dynamic-form.html -->
+<form [formGroup]="form" class="dynamic-form" autocomplete="off">
+  @for (field of formConfig(); track field.propertyName) {
+    <div class="form-field-wrapper">
+
+      @switch (field.type) {
+
+        @case ('input') {
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ field.displayName }}</mat-label>
+            <input
+              matInput
+              [type]="field.dataType"
+              [formControlName]="field.propertyName"
+              [placeholder]="field.displayName"
+            />
+            @if (form.get(field.propertyName)?.invalid && form.get(field.propertyName)?.touched) {
+              <mat-error>{{ field.displayName }} is required</mat-error>
+            }
+          </mat-form-field>
+        }
+
+        @case ('boolean') {
+          <div class="toggle-field">
+            <mat-slide-toggle [formControlName]="field.propertyName" color="primary">
+              {{ field.displayName }}
+            </mat-slide-toggle>
+          </div>
+        }
+
+        @case ('selectable') {
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ field.displayName }}</mat-label>
+            <mat-select [formControlName]="field.propertyName">
+              @for (option of field.options; track option) {
+                <mat-option [value]="option">
+                  {{ field.formatter ? field.formatter(option) : enumFormatter(option) }}
+                </mat-option>
+              }
+            </mat-select>
+            @if (form.get(field.propertyName)?.invalid && form.get(field.propertyName)?.touched) {
+              <mat-error>{{ field.displayName }} is required</mat-error>
+            }
+          </mat-form-field>
+        }
+
+        @case ('autocomplete') {
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ field.displayName }}</mat-label>
+            <input
+              matInput
+              [formControlName]="field.propertyName"
+              [matAutocomplete]="auto"
+              (focus)="loadAutocompleteOptions(field)"
+            />
+            <mat-autocomplete #auto="matAutocomplete">
+              @if (autocompleteLoading()) {
+                <mat-option disabled>
+                  <mat-progress-bar mode="indeterminate" />
+                </mat-option>
+              } @else {
+                @for (opt of autocompleteOptions(); track opt) {
+                  <mat-option [value]="opt">{{ opt }}</mat-option>
+                }
+              }
+            </mat-autocomplete>
+            @if (form.get(field.propertyName)?.invalid && form.get(field.propertyName)?.touched) {
+              <mat-error>{{ field.displayName }} is required</mat-error>
+            }
+          </mat-form-field>
+        }
+
+      }
+    </div>
+  }
+</form>

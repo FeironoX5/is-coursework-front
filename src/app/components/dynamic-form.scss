@@ -1,0 +1,25 @@
+// dynamic-form.scss
+.dynamic-form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.form-field-wrapper {
+  width: 100%;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.toggle-field {
+  display: flex;
+  align-items: center;
+  padding: 12px 0;
+  min-height: 56px;
+}
+
+mat-progress-bar {
+  width: 100%;
+}

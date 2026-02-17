@@ -14,7 +14,6 @@ import {
   MatListItemIcon,
   MatNavList,
 } from '@angular/material/list';
-import { AuthService } from './services/auth-service';
 import { NotificationActions } from './components/notification-actions/notification-actions';
 import { routes } from './app.config';
 import {
@@ -22,6 +21,7 @@ import {
   roleFormatter,
   upperCaseFormatter,
 } from './formatters';
+import { AuthService } from './services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -44,41 +44,5 @@ import {
   styleUrl: './app.scss',
 })
 export class App {
-  protected readonly authService = inject(AuthService);
   protected readonly router = inject(Router);
-
-  navItems = computed(() => {
-    const isAuthenticated = this.authService.isAuthenticated();
-    if (!isAuthenticated) return [];
-    const role = this.authService.snapshot!.role;
-    const roleRoute = routes.find(
-      (r) => r.path === roleFormatter(role)
-    );
-    if (!roleRoute || !roleRoute.children) return [];
-    return roleRoute.children
-      .filter((child) => !child.path!.includes('/'))
-      .map((child) => {
-        const path = child.path!;
-        return {
-          link: `/${roleFormatter(role)}/${path}`,
-          label: upperCaseFormatter(path),
-          icon: this.getIcon(path),
-        };
-      });
-  });
-
-  private getIcon(path: string) {
-    const map: Record<string, string> = {
-      profile: 'face',
-      programs: 'menu_book',
-      assignments: 'assignment',
-      stats: 'bar_chart',
-      applications: 'list_alt',
-    };
-    return map[path] || 'circle';
-  }
-
-  protected readonly roleFormatter = roleFormatter;
-  protected readonly upperCaseFormatter = upperCaseFormatter;
-  protected readonly enumFormatter = enumFormatter;
 }
