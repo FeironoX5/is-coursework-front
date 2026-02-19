@@ -21,6 +21,10 @@ import { ProgramDetailPage } from './pages/common/program-detail-page/program-de
 import { ResidenceProgramsPage } from './pages/residence/residence-programs.page';
 import { AdminValidationPage } from './pages/admin/admin-validation.page';
 import { ResidenceProgramEdit } from './pages/residence/residence-program-edit/residence-program-edit';
+import { ExpertAssignmentPage } from './pages/common/expert-assignment.page';
+import { ApplicationsRankingPage } from './pages/common/applications-ranking.page';
+import { ArtistsPage } from './pages/common/artists.page';
+import { ArtistDetailPage } from './pages/common/artist-detail.page';
 
 export const multipleRolePages: {
   route: Route;
@@ -57,6 +61,20 @@ export const multipleRolePages: {
   },
   {
     route: {
+      path: 'artists',
+      component: ArtistsPage,
+    },
+    show: true,
+  },
+  {
+    route: {
+      path: 'artists/:id',
+      component: ArtistDetailPage,
+    },
+    show: false,
+  },
+  {
+    route: {
       path: 'programs/:id',
       component: ProgramDetailPage,
     },
@@ -73,6 +91,14 @@ export const roleSpecificPages: {
     children: [
       { path: 'my_programs', component: ResidenceProgramsPage },
       { path: 'my_programs/:id', component: ResidenceProgramEdit },
+      {
+        path: 'my_programs/:id/ranking',
+        component: ApplicationsRankingPage,
+      },
+      {
+        path: 'my_programs/:id/experts',
+        component: ExpertAssignmentPage,
+      },
     ],
   },
   {

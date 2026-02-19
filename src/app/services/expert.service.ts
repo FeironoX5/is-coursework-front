@@ -11,6 +11,7 @@ import type {
   PageExpertDto,
   PageProgramPreviewDto,
   Pageable,
+  PageUserDto,
 } from '../models';
 
 const BASE = '/api/experts';
@@ -93,6 +94,86 @@ export class ExpertService {
   getMyProfile(): Observable<ExpertDto> {
     if (this.mode === 'test') return of(FAKE_EXPERT);
     return this.http.get<ExpertDto>(`${BASE}/me`);
+  }
+
+  /** GET /api/experts/programs/{programId} — get experts assigned to program */
+  getExpertsByProgram(
+    programId: number,
+    pageable?: Pageable
+  ): Observable<PageUserDto> {
+    if (this.mode === 'test') {
+      return of(
+        fakePage([
+          {
+            id: 10,
+            username: 'expert1@example.com',
+            name: 'Maria',
+            surname: 'Ivanova',
+            role: 'ROLE_EXPERT',
+            isActive: true,
+          },
+          {
+            id: 11,
+            username: 'expert2@example.com',
+            name: 'Ivan',
+            surname: 'Petrov',
+            role: 'ROLE_EXPERT',
+            isActive: true,
+          },
+        ])
+      );
+    }
+    return this.http.get<PageUserDto>(
+      `${BASE}/programs/${programId}`,
+      { params: toHttpParams(pageable) }
+    );
+  }
+
+  /** GET /api/experts/search?query={query} — search experts */
+  searchExperts(
+    query: string,
+    pageable?: Pageable
+  ): Observable<PageUserDto> {
+    if (this.mode === 'test') {
+      return of(
+        fakePage([
+          {
+            id: 12,
+            username: 'expert3@example.com',
+            name: 'Olga',
+            surname: 'Smirnova',
+            role: 'ROLE_EXPERT',
+            isActive: true,
+          },
+        ])
+      );
+    }
+    let params = toHttpParams(pageable);
+    params = params.set('query', query);
+    return this.http.get<PageUserDto>(`${BASE}/search`, { params });
+  }
+
+  /** POST /api/experts/programs/{programId}/assign/{expertId} */
+  assignExpertToProgram(
+    programId: number,
+    expertId: number
+  ): Observable<void> {
+    if (this.mode === 'test') return of(undefined);
+    return this.http.post<void>(
+      `${BASE}/programs/${programId}/assign/${expertId}`,
+      null
+    );
+  }
+
+  /** DELETE /api/experts/programs/{programId}/remove/{expertId} */
+  removeExpertFromProgram(
+    programId: number,
+    expertId: number
+  ): Observable<void> {
+    if (this.mode === 'test') return of(undefined);
+    return this.http.delete<void>(
+      `${BASE}/programs/${programId}/remove/${expertId}`
+    );
   }
 
   /** GET /api/experts/me/programs */

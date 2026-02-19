@@ -14,6 +14,30 @@
       </mat-slide-toggle>
       <button
         mat-stroked-button
+        (click)="
+          router.navigate([
+            '/residences/me/programs',
+            programId(),
+            'experts',
+          ])
+        "
+      >
+        <mat-icon>people</mat-icon> Manage Experts
+      </button>
+      <button
+        mat-stroked-button
+        (click)="
+          router.navigate([
+            '/residences/me/programs',
+            programId(),
+            'ranking',
+          ])
+        "
+      >
+        <mat-icon>leaderboard</mat-icon> View Ranking
+      </button>
+      <button
+        mat-stroked-button
         (click)="router.navigate(['/programs', programId()])"
       >
         <mat-icon>visibility</mat-icon> Preview

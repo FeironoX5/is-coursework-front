@@ -64,6 +64,20 @@ export class ArtistAchievementService {
   private readonly http = inject(HttpClient);
   private readonly mode = inject(MODE);
 
+  /** GET /api/artists/{artistId}/achievements — get achievements by artist user ID */
+  getAchievementsByArtistId(
+    artistId: number,
+    pageable?: Pageable
+  ): Observable<PageAchievementDto> {
+    if (this.mode === 'test') {
+      return of(fakePage([FAKE_ACHIEVEMENT]));
+    }
+
+    return this.http.get<PageAchievementDto>(
+      `/api/artists/${artistId}/achievements`,
+      { params: toHttpParams(pageable) }
+    );
+  }
   /** GET /api/artists/me/achievements */
   getMyAchievements(
     pageable?: Pageable

@@ -7,6 +7,7 @@ import { HttpClient } from '@angular/common/http';
 import { map, Observable, of, switchMap, tap } from 'rxjs';
 import { MODE } from '../app.config';
 import type {
+  ArtistProfileDto,
   AuthenticationDto,
   SignInDto,
   SignUpDto,

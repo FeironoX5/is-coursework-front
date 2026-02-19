@@ -67,9 +67,13 @@ export class ArtistService {
   private readonly mode = inject(MODE);
 
   // ── Public listing ──────────────────────────────────────────
+  /** GET /api/artists/{userId} — get artist by user ID */
+  getArtistByUserId(userId: number): Observable<ArtistProfileDto> {
+    return this.http.get<ArtistProfileDto>(`${BASE}/${userId}`);
+  }
 
   /** GET /api/artists */
-  getArtistsProfile(
+  getArtistProfiles(
     pageable?: Pageable
   ): Observable<PageArtistProfileDto> {
     if (this.mode === 'test') {

@@ -114,12 +114,15 @@
                 [showManage]="true"
                 (viewClicked)="nav('/programs/' + $event)"
                 (manageClicked)="
-                  nav('/residences/me/programs/' + $event)
+                  nav('/ROLE_RESIDENCE_ADMIN/my_programs/' + $event)
                 "
               />
             }
           </div>
-          <button mat-button (click)="nav('/residences/me/programs')">
+          <button
+            mat-button
+            (click)="nav('/ROLE_RESIDENCE_ADMIN/my_programs')"
+          >
             View all programs →
           </button>
         } @else {
@@ -128,13 +131,6 @@
             title="No programs yet"
             message="Create your first open call"
           >
-            <button
-              mat-flat-button
-              color="primary"
-              (click)="nav('/residences/me/programs/new')"
-            >
-              Create Program
-            </button>
           </app-empty-state>
         }
       }

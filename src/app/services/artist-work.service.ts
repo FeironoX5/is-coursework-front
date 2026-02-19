@@ -66,6 +66,29 @@ export class ArtistWorkService {
   private readonly http = inject(HttpClient);
   private readonly mode = inject(MODE);
 
+  /** GET /api/artists/{artistId}/works — get works by artist user ID */
+  getWorksByArtistId(
+    artistId: number,
+    pageable?: Pageable
+  ): Observable<PageWorkDto> {
+    if (this.mode === 'test') {
+      return of(
+        fakePage([
+          FAKE_WORK,
+          {
+            ...FAKE_WORK,
+            id: 2,
+            title: 'Urban Landscape',
+            artDirection: 'PAINTING',
+          },
+        ])
+      );
+    }
+    return this.http.get<PageWorkDto>(
+      `/api/artists/${artistId}/works`,
+      { params: toHttpParams(pageable) }
+    );
+  }
   /** GET /api/artists/me/works */
   getWorksForCurrentArtist(
     pageable?: Pageable
