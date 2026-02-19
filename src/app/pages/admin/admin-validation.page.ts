@@ -35,6 +35,7 @@ import type {
   ValidationActionDto,
 } from '../../models';
 import { formatDate } from '../../formatters';
+import { StatusBadgeComponent } from '../../components/chip.components';
 
 const REJECT_FIELDS: FieldConfig[] = [
   {
@@ -60,6 +61,7 @@ const REJECT_FIELDS: FieldConfig[] = [
     PageHeaderComponent,
     EmptyStateComponent,
     DynamicForm,
+    StatusBadgeComponent,
   ],
   template: `
     <div class="page-container">
@@ -85,12 +87,11 @@ const REJECT_FIELDS: FieldConfig[] = [
                 </mat-panel-title>
                 <mat-panel-description>
                   <span>{{ r.location }}</span>
-                  <!--                  <app-status-badge-->
-                  <!--                    [status]="-->
-                  <!--                      r.validation?.validationStatus ?? 'PENDING'-->
-                  <!--                    "-->
-                  <!--                  />-->
-                  <!--                  todo-->
+                  <app-chip
+                    [status]="
+                      r.validation?.validationStatus ?? 'PENDING'
+                    "
+                  />
                 </mat-panel-description>
               </mat-expansion-panel-header>
 

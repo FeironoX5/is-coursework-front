@@ -64,3 +64,10 @@ body {
   flex-direction: column;
   justify-content: center;
 }
+
+.mdc-evolution-chip__text-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+}

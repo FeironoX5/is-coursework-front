@@ -7,13 +7,17 @@ import {
   MatListItem,
   MatListItemIcon,
   MatListItemTitle,
-  MatListItemLine
+  MatListItemLine,
 } from '@angular/material/list';
 import { MatIcon } from '@angular/material/icon';
 import { MatIconButton } from '@angular/material/button';
 import { MatChip } from '@angular/material/chips';
 import type { AchievementDto } from '../models';
 import { achievementTypeLabel } from '../formatters';
+import {
+  MatCardActions,
+  MatCardModule,
+} from '@angular/material/card';
 
 const ACHIEVEMENT_ICONS: Record<string, string> = {
   EDUCATION: 'school',
@@ -31,39 +35,43 @@ const ACHIEVEMENT_ICONS: Record<string, string> = {
     MatIcon,
     MatIconButton,
     MatChip,
-    MatListItemIcon,
-    MatListItemTitle,
-    MatListItemLine,
+    MatCardModule,
   ],
   template: `
-    <mat-list-item class="achievement-item">
-      <mat-icon matListItemIcon>{{ icon() }}</mat-icon>
+    <mat-card class="achievement-item">
+      <mat-card-content>
+        <div class="row">
+          <mat-icon>{{ icon() }}</mat-icon>
 
-      <span matListItemTitle class="title-row">
-        {{ achievement().title }}
-        <mat-chip class="type-chip">{{
-          achievementTypeLabel(achievement().type!)
-        }}</mat-chip>
-      </span>
+          <div class="content">
+            <div class="title-row">
+              {{ achievement().title }}
+              <mat-chip class="type-chip">{{
+                achievementTypeLabel(achievement().type!)
+              }}</mat-chip>
+            </div>
 
-      @if (achievement().description) {
-        <span matListItemLine>{{ achievement().description }}</span>
-      }
-      @if (achievement().link) {
-        <span matListItemLine>
-          <a
-            [href]="achievement().link!"
-            target="_blank"
-            rel="noopener"
-            class="link"
-          >
-            {{ achievement().link }}
-          </a>
-        </span>
-      }
+            @if (achievement().description) {
+              <div class="line">{{ achievement().description }}</div>
+            }
+            @if (achievement().link) {
+              <div class="line">
+                <a
+                  [href]="achievement().link!"
+                  target="_blank"
+                  rel="noopener"
+                  class="link"
+                >
+                  {{ achievement().link }}
+                </a>
+              </div>
+            }
+          </div>
+        </div>
+      </mat-card-content>
 
       @if (editable()) {
-        <div class="actions" matListItemMeta>
+        <mat-card-actions align="end">
           <button
             mat-icon-button
             (click)="editClicked.emit(achievement())"
@@ -79,34 +87,50 @@ const ACHIEVEMENT_ICONS: Record<string, string> = {
           >
             <mat-icon>delete</mat-icon>
           </button>
-        </div>
+        </mat-card-actions>
       }
-    </mat-list-item>
+    </mat-card>
   `,
   styles: [
     `
       .achievement-item {
-        height: auto !important;
-        padding: 12px 0;
+        padding: 4px 0;
       }
+
+      .row {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+      }
+
+      .content {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
       .title-row {
         display: flex;
         align-items: center;
         gap: 8px;
       }
+
+      .line {
+        font-size: 12px;
+        opacity: 0.8;
+      }
+
       .type-chip {
         font-size: 11px;
         height: 20px;
         min-height: 20px;
       }
+
       .link {
         font-size: 12px;
         color: inherit;
         opacity: 0.7;
         word-break: break-all;
-      }
-      .actions {
-        display: flex;
       }
     `,
   ],

@@ -36,6 +36,7 @@ import type {
   UserDto,
 } from '../../../models';
 import { NgTemplateOutlet } from '@angular/common';
+import { StatusBadgeComponent } from '../../../components/chip.components';
 
 const EVALUATE_FIELDS: FieldConfig[] = [
   {
@@ -73,6 +74,7 @@ const EVALUATE_FIELDS: FieldConfig[] = [
     EmptyStateComponent,
     DynamicForm,
     NgTemplateOutlet,
+    StatusBadgeComponent,
   ],
   templateUrl: './applications-page.html',
   styleUrl: './applications-page.scss',

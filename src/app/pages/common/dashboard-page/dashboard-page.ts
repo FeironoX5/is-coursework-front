@@ -9,7 +9,6 @@ import { MatDividerModule } from '@angular/material/divider';
 
 import { PageHeaderComponent } from '../../../components/page-header.component';
 import { ProgramCardComponent } from '../../../components/program-card.component';
-// import { StatusBadgeComponent } from '../../../components/status-badge.component';
 import { EmptyStateComponent } from '../../../components/empty-state.component';
 
 import { UserService } from '../../../services/user.service';
@@ -27,6 +26,7 @@ import type {
   ProgramStatsDto,
 } from '../../../models';
 import { roleFormatter, formatDate } from '../../../formatters';
+import { StatusBadgeComponent } from '../../../components/chip.components';
 
 @Component({
   selector: 'app-dashboard-page',
@@ -41,6 +41,7 @@ import { roleFormatter, formatDate } from '../../../formatters';
     ProgramCardComponent,
     // StatusBadgeComponent,
     EmptyStateComponent,
+    StatusBadgeComponent,
   ],
   templateUrl: './dashboard-page.html',
   styleUrl: './dashboard-page.scss',

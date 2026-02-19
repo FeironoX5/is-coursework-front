@@ -14,7 +14,7 @@
             mat-flat-button
             color="primary"
             [disabled]="(daysLeft() ?? -1) <= 0"
-            (click)="showApply.set(true)"
+            (click)="openApplyDialog()"
           >
             Apply Now
           </button>
@@ -163,37 +163,5 @@
         </div>
       </mat-tab>
     </mat-tab-group>
-
-    <!-- Apply Overlay -->
-    @if (showApply()) {
-      <div class="dialog-overlay" (click)="showApply.set(false)">
-        <mat-card
-          class="apply-dialog"
-          (click)="$event.stopPropagation()"
-        >
-          <mat-card-header>
-            <mat-card-title
-              >Apply for
-              {{ program()!.previewDto?.title }}</mat-card-title
-            >
-          </mat-card-header>
-          <mat-card-content>
-            <app-dynamic-form #applyForm [formConfig]="applyFields" />
-          </mat-card-content>
-          <mat-card-actions>
-            <button
-              mat-flat-button
-              color="primary"
-              (click)="submitApplication()"
-            >
-              Submit
-            </button>
-            <button mat-button (click)="showApply.set(false)">
-              Cancel
-            </button>
-          </mat-card-actions>
-        </mat-card>
-      </div>
-    }
   }
 </div>

@@ -131,17 +131,14 @@
                   message="Add your awards, exhibitions and publications"
                 />
               } @else {
-                <mat-list>
-                  @for (a of achievements(); track a.id) {
-                    <app-achievement-item
-                      [achievement]="a"
-                      [editable]="true"
-                      (editClicked)="startEditAchievement($event)"
-                      (deleteClicked)="deleteAchievement($event)"
-                    />
-                    <mat-divider />
-                  }
-                </mat-list>
+                @for (a of achievements(); track a.id) {
+                  <app-achievement-item
+                    [achievement]="a"
+                    [editable]="true"
+                    (editClicked)="startEditAchievement($event)"
+                    (deleteClicked)="deleteAchievement($event)"
+                  />
+                }
               }
             </div>
           </mat-tab>

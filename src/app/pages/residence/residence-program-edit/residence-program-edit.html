@@ -4,7 +4,6 @@
   } @else if (program()) {
     <app-page-header
       [title]="program()!.previewDto?.title ?? 'Edit Program'"
-      subtitle="Manage program details and applications"
     >
       <mat-slide-toggle
         [checked]="program()!.isPublished ?? false"
@@ -98,7 +97,7 @@
                         </div>
                       </div>
                       <div class="app-actions">
-                        <!--                        <app-status-badge [status]="app.status!" />-->
+                        <app-chip [status]="app.status!" />
                         <button
                           mat-icon-button
                           [matMenuTriggerFor]="menu"
@@ -150,7 +149,7 @@
                           {{ app.motivation }}
                         </div>
                       </div>
-                      <!--                      <app-status-badge [status]="app.status!" />-->
+                      <app-chip [status]="app.status!" />
                     </div>
                   </mat-card-content>
                 </mat-card>

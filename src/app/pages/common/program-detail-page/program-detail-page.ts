@@ -35,6 +35,8 @@ import type {
   UserRole,
 } from '../../../models';
 import { formatDate, daysUntil } from '../../../formatters';
+import { MatDialog } from '@angular/material/dialog';
+import { ApplyDialogComponent } from '../../../components/apply-dialog.component';
 
 const APPLY_FIELDS: FieldConfig[] = [
   {
@@ -91,12 +93,12 @@ export class ProgramDetailPage implements OnInit {
   private readonly userService = inject(UserService);
   private readonly snackBar = inject(MatSnackBar);
   protected readonly router = inject(Router);
+  private readonly dialog = inject(MatDialog);
 
   protected loading = signal(true);
   protected program = signal<ProgramDto | null>(null);
   protected reviews = signal<ReviewDto[]>([]);
   protected userRole = signal<UserRole | undefined>(undefined);
-  protected showApply = signal(false);
   protected programId = signal<number>(0);
 
   protected daysLeft = signal<number | null>(null);
@@ -105,8 +107,6 @@ export class ProgramDetailPage implements OnInit {
   protected readonly reviewFields = REVIEW_FIELDS;
   protected readonly formatDate = formatDate;
 
-  protected readonly applyForm =
-    viewChild<DynamicForm<ApplicationCreateDto>>('applyForm');
   protected readonly reviewForm =
     viewChild<DynamicForm<ReviewCreateDto>>('reviewForm');
 
@@ -127,31 +127,6 @@ export class ProgramDetailPage implements OnInit {
     this.reviewService
       .getReviews(id)
       .subscribe((page) => this.reviews.set(page.content));
-  }
-
-  submitApplication() {
-    const form = this.applyForm();
-    if (!form?.valid) {
-      form?.markAllTouched();
-      return;
-    }
-    this.programService
-      .createApplication(
-        this.programId(),
-        form.values as ApplicationCreateDto
-      )
-      .subscribe({
-        next: () => {
-          this.snackBar.open('Application submitted!', 'Close', {
-            duration: 3000,
-          });
-          this.showApply.set(false);
-        },
-        error: () =>
-          this.snackBar.open('Failed to submit', 'Close', {
-            duration: 3000,
-          }),
-      });
   }
 
   submitReview() {
@@ -178,5 +153,33 @@ export class ProgramDetailPage implements OnInit {
 
   protected hasEntries(obj: Record<string, unknown>): boolean {
     return Object.keys(obj).length > 0;
+  }
+
+  openApplyDialog() {
+    const program = this.program();
+    if (!program) return;
+
+    const ref = this.dialog.open(ApplyDialogComponent, {
+      data: { program, fields: this.applyFields },
+      disableClose: true,
+    });
+
+    ref.afterClosed().subscribe((values?: ApplicationCreateDto) => {
+      if (!values) return;
+
+      this.programService
+        .createApplication(this.programId(), values)
+        .subscribe({
+          next: () => {
+            this.snackBar.open('Application submitted!', 'Close', {
+              duration: 3000,
+            });
+          },
+          error: () =>
+            this.snackBar.open('You cannot apply', 'Close', {
+              duration: 3000,
+            }),
+        });
+    });
   }
 }

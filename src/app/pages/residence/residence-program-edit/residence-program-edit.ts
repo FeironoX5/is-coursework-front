@@ -29,6 +29,7 @@ import {
 import { PageHeaderComponent } from '../../../components/page-header.component';
 import { ResidenceProgramService } from '../../../services/residence-program.service';
 import { ApplicationService } from '../../../services/application.service';
+import { StatusBadgeComponent } from '../../../components/chip.components';
 
 const EDIT_FIELDS = (p: ProgramDto): FieldConfig[] => [
   {
@@ -105,6 +106,7 @@ const EDIT_FIELDS = (p: ProgramDto): FieldConfig[] => [
     MatMenuModule,
     PageHeaderComponent,
     DynamicForm,
+    StatusBadgeComponent,
   ],
   templateUrl: './residence-program-edit.html',
   styleUrl: './residence-program-edit.scss',

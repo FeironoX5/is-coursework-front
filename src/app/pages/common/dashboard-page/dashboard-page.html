@@ -46,10 +46,7 @@
                   >Program #{{ app.programId }}</span
                 >
                 <span matListItemLine>{{ app.motivation }}</span>
-                <!--                <app-status-badge-->
-                <!--                  matListItemMeta-->
-                <!--                  [status]="app.status!"-->
-                <!--                />-->
+                <app-chip matListItemMeta [status]="app.status!" />
               </mat-list-item>
               <mat-divider />
             }
@@ -171,6 +168,7 @@
                 [program]="p"
                 (viewClicked)="nav('/programs/' + $event)"
               />
+              <!--                todo-->
             }
           </div>
         } @else {
