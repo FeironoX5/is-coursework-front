@@ -21,6 +21,10 @@ export function upperCaseFormatter(value: string): string {
   return value.toUpperCase();
 }
 
+export function capitalizeFormatter(value: string): string {
+  return value.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
 export function roleFormatter(role: string): string {
   const map: Record<string, string> = {
     ROLE_ARTIST: 'Artist',

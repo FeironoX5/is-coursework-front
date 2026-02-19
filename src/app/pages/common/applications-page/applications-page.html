@@ -1,0 +1,326 @@
+<div class="page-container">
+  @switch (currentUser()?.role) {
+    <!-- ── ARTIST — see their own applications ─────────── -->
+    @case ('ROLE_ARTIST') {
+      <app-page-header title="My Applications" />
+
+      <mat-tab-group animationDuration="200ms">
+        <mat-tab label="Active">
+          <div class="tab-body">
+            @if (loading()) {
+              <div class="loading-center"><mat-spinner /></div>
+            } @else if (artistApplications().length === 0) {
+              <app-empty-state
+                icon="inbox"
+                title="No active applications"
+                message="Apply for a residency program to get started"
+              />
+            } @else {
+              <table
+                mat-table
+                [dataSource]="artistApplications()"
+                class="full-table"
+              >
+                <ng-container matColumnDef="program">
+                  <th mat-header-cell *matHeaderCellDef>Program</th>
+                  <td mat-cell *matCellDef="let app">
+                    Program #{{ app.programId }}
+                  </td>
+                </ng-container>
+                <ng-container matColumnDef="status">
+                  <th mat-header-cell *matHeaderCellDef>Status</th>
+                  <td mat-cell *matCellDef="let app">
+                    <!--                    <app-status-badge [status]="app.status" />-->
+                  </td>
+                </ng-container>
+                <ng-container matColumnDef="actions">
+                  <th mat-header-cell *matHeaderCellDef></th>
+                  <td mat-cell *matCellDef="let app">
+                    @if (app.status === 'APPROVED') {
+                      <button
+                        mat-flat-button
+                        color="primary"
+                        (click)="confirmApplication(app.id)"
+                      >
+                        Confirm
+                      </button>
+                      <button
+                        mat-button
+                        color="warn"
+                        (click)="declineApplication(app.id)"
+                      >
+                        Decline
+                      </button>
+                    }
+                  </td>
+                </ng-container>
+                <tr
+                  mat-header-row
+                  *matHeaderRowDef="artistColumns"
+                ></tr>
+                <tr
+                  mat-row
+                  *matRowDef="let row; columns: artistColumns"
+                ></tr>
+              </table>
+            }
+          </div>
+        </mat-tab>
+
+        <mat-tab label="History">
+          <div class="tab-body">
+            @if (loading()) {
+              <div class="loading-center"><mat-spinner /></div>
+            } @else if (artistHistory().length === 0) {
+              <app-empty-state
+                icon="history"
+                title="No history yet"
+              />
+            } @else {
+              <table
+                mat-table
+                [dataSource]="artistHistory()"
+                class="full-table"
+              >
+                <ng-container matColumnDef="program">
+                  <th mat-header-cell *matHeaderCellDef>Program</th>
+                  <td mat-cell *matCellDef="let app">
+                    Program #{{ app.programId }}
+                  </td>
+                </ng-container>
+                <ng-container matColumnDef="status">
+                  <th mat-header-cell *matHeaderCellDef>Status</th>
+                  <td mat-cell *matCellDef="let app">
+                    <!--                    <app-status-badge [status]="app.status" />-->
+                  </td>
+                </ng-container>
+                <ng-container matColumnDef="actions">
+                  <th mat-header-cell *matHeaderCellDef></th>
+                  <td mat-cell *matCellDef="let app"></td>
+                </ng-container>
+                <tr
+                  mat-header-row
+                  *matHeaderRowDef="artistColumns"
+                ></tr>
+                <tr
+                  mat-row
+                  *matRowDef="let row; columns: artistColumns"
+                ></tr>
+              </table>
+            }
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    }
+
+    <!-- ── EXPERT — evaluate applications ──────────────── -->
+    @case ('ROLE_EXPERT') {
+      <app-page-header title="Applications to Review" />
+
+      @if (loading()) {
+        <div class="loading-center"><mat-spinner /></div>
+      } @else if (expertApplications().length === 0) {
+        <app-empty-state
+          icon="rate_review"
+          title="Nothing to review"
+          message="No unreviewed applications assigned to you"
+        />
+      } @else {
+        <table
+          mat-table
+          [dataSource]="expertApplications()"
+          class="full-table"
+        >
+          <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef>#</th>
+            <td mat-cell *matCellDef="let app">{{ app.id }}</td>
+          </ng-container>
+          <ng-container matColumnDef="program">
+            <th mat-header-cell *matHeaderCellDef>Program</th>
+            <td mat-cell *matCellDef="let app">
+              Program #{{ app.programId }}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="motivation">
+            <th mat-header-cell *matHeaderCellDef>Motivation</th>
+            <td
+              mat-cell
+              *matCellDef="let app"
+              class="motivation-cell"
+            >
+              {{ app.motivation }}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <td mat-cell *matCellDef="let app">
+              <!--              <app-status-badge [status]="app.status" />-->
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let app">
+              <button
+                mat-icon-button
+                [matMenuTriggerFor]="menu"
+                aria-label="Actions"
+              >
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #menu>
+                <button
+                  mat-menu-item
+                  (click)="openEvaluatePanel(app)"
+                >
+                  <mat-icon>rate_review</mat-icon> Evaluate
+                </button>
+              </mat-menu>
+            </td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="expertColumns"></tr>
+          <tr
+            mat-row
+            *matRowDef="let row; columns: expertColumns"
+          ></tr>
+        </table>
+      }
+
+      <!-- Evaluation inline panel -->
+      @if (evaluatingApp() !== null) {
+        <div class="dialog-overlay" (click)="cancelEvaluate()">
+          <mat-card
+            class="eval-dialog"
+            (click)="$event.stopPropagation()"
+          >
+            <mat-card-header>
+              <mat-card-title
+                >Evaluate Application #{{
+                  evaluatingApp()!.id
+                }}</mat-card-title
+              >
+            </mat-card-header>
+            <mat-card-content>
+              <app-dynamic-form
+                #evaluateForm
+                [formConfig]="evaluateFields"
+              />
+            </mat-card-content>
+            <mat-card-actions>
+              <button
+                mat-flat-button
+                color="primary"
+                (click)="submitEvaluation()"
+              >
+                Submit
+              </button>
+              <button mat-button (click)="cancelEvaluate()">
+                Cancel
+              </button>
+            </mat-card-actions>
+          </mat-card>
+        </div>
+      }
+    }
+
+    <!-- ── RESIDENCE ADMIN — manage applications ────────── -->
+    @case ('ROLE_RESIDENCE_ADMIN') {
+      <app-page-header title="Program Applications" />
+
+      <mat-tab-group animationDuration="200ms">
+        <mat-tab label="Pending">
+          <div class="tab-body">
+            <ng-container
+              *ngTemplateOutlet="
+                adminAppTable;
+                context: {
+                  apps: adminPendingApps(),
+                  showActions: true,
+                }
+              "
+            />
+          </div>
+        </mat-tab>
+        <mat-tab label="Evaluated">
+          <div class="tab-body">
+            <ng-container
+              *ngTemplateOutlet="
+                adminAppTable;
+                context: {
+                  apps: adminEvaluatedApps(),
+                  showActions: false,
+                }
+              "
+            />
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+
+      <ng-template
+        #adminAppTable
+        let-apps="apps"
+        let-showActions="showActions"
+      >
+        @if (loading()) {
+          <div class="loading-center"><mat-spinner /></div>
+        } @else if (apps.length === 0) {
+          <app-empty-state icon="inbox" title="No applications" />
+        } @else {
+          <table mat-table [dataSource]="apps" class="full-table">
+            <ng-container matColumnDef="id">
+              <th mat-header-cell *matHeaderCellDef>#</th>
+              <td mat-cell *matCellDef="let app">{{ app.id }}</td>
+            </ng-container>
+            <ng-container matColumnDef="program">
+              <th mat-header-cell *matHeaderCellDef>Program</th>
+              <td mat-cell *matCellDef="let app">
+                Program #{{ app.programId }}
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef>Status</th>
+              <td mat-cell *matCellDef="let app">
+                <!--                <app-status-badge [status]="app.status" />-->
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef></th>
+              <td mat-cell *matCellDef="let app">
+                @if (showActions) {
+                  <button
+                    mat-icon-button
+                    [matMenuTriggerFor]="adminMenu"
+                    aria-label="Actions"
+                  >
+                    <mat-icon>more_vert</mat-icon>
+                  </button>
+                  <mat-menu #adminMenu>
+                    <button
+                      mat-menu-item
+                      (click)="approveApp(app.id)"
+                    >
+                      <mat-icon>check</mat-icon> Approve
+                    </button>
+                    <button
+                      mat-menu-item
+                      (click)="reserveApp(app.id)"
+                    >
+                      <mat-icon>bookmark</mat-icon> Reserve
+                    </button>
+                    <button mat-menu-item (click)="rejectApp(app.id)">
+                      <mat-icon>close</mat-icon> Reject
+                    </button>
+                  </mat-menu>
+                }
+              </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="adminColumns"></tr>
+            <tr
+              mat-row
+              *matRowDef="let row; columns: adminColumns"
+            ></tr>
+          </table>
+        }
+      </ng-template>
+    }
+  }
+</div>

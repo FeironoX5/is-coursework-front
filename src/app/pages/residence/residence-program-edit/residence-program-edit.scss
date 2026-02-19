@@ -1,0 +1,93 @@
+.page-container {
+  padding: 32px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+.loading-center {
+  display: flex;
+  justify-content: center;
+  padding: 80px;
+}
+.tab-body {
+  padding: 24px 0;
+}
+.form-section {
+  max-width: 640px;
+}
+.form-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 24px;
+}
+
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 16px;
+  padding: 20px 0;
+}
+.stat-item {
+  text-align: center;
+}
+.stat-label {
+  display: block;
+  font-size: 12px;
+  margin-bottom: 4px;
+}
+.stat-value {
+  display: block;
+  font-size: 28px;
+  font-weight: 600;
+}
+.stat-value.success {
+  color: #4caf50;
+}
+.stat-value.error {
+  color: #f44336;
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 24px 0 12px;
+}
+.empty-text {
+  font-size: 14px;
+  padding: 16px 0;
+}
+
+.application-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.app-card {
+  cursor: default;
+}
+.app-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.app-info {
+  flex: 1;
+  min-width: 0;
+}
+.app-id {
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+.app-motivation {
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.app-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

@@ -1,67 +1,60 @@
-<router-outlet></router-outlet>
-<!--<mat-toolbar id="header">-->
-<!--  <button-->
-<!--    matIconButton-->
-<!--    [disabled]="!authService.isAuthenticated()"-->
-<!--    (click)="authService.isAuthenticated() && drawer.toggle()"-->
-<!--  >-->
-<!--    <mat-icon>-->
-<!--      {{ authService.isAuthenticated() ? 'menu' : 'waving_hand' }}-->
-<!--    </mat-icon>-->
-<!--  </button>-->
-<!--  <span id="logo">ART2ART</span>-->
-<!--  <mat-chip> 1.0 </mat-chip>-->
-<!--  <span class="spacer"></span>-->
-<!--  @if (authService.isAuthenticated()) {-->
-<!--    <app-notification-actions></app-notification-actions>-->
-<!--  }-->
-<!--  <router-outlet name="actions"></router-outlet>-->
-<!--</mat-toolbar>-->
-<!--<mat-sidenav-container style="display: contents">-->
-<!--  <mat-sidenav-->
-<!--    id="drawer"-->
-<!--    #drawer-->
-<!--    fixedInViewport="true"-->
-<!--    [opened]="authService.isAuthenticated()"-->
-<!--    mode="side"-->
-<!--    fixedTopGap="60"-->
-<!--  >-->
-<!--    @if (authService.isAuthenticated()) {-->
-<!--      <div id="drawer-container">-->
-<!--        <mat-nav-list>-->
-<!--          @for (navItem of navItems(); track navItem.link) {-->
-<!--            <mat-list-item [routerLink]="navItem.link">-->
-<!--              <mat-icon matListItemIcon>{{ navItem.icon }}</mat-icon>-->
-<!--              {{ navItem.label }}-->
-<!--            </mat-list-item>-->
-<!--          }-->
-<!--        </mat-nav-list>-->
-<!--        <span class="spacer"></span>-->
-<!--        <div class="avatar-container">-->
-<!--          <span class="avatar"></span>-->
-<!--          <div>-->
-<!--            <span style="font-weight: 500; font-size: 16px">-->
-<!--              {{ authService.snapshot!.name }}-->
-<!--              {{ authService.snapshot!.surname }}-->
-<!--            </span>-->
-<!--            <span style="font-weight: 500; font-size: 12px">-->
-<!--              {{-->
-<!--                upperCaseFormatter(-->
-<!--                  enumFormatter(-->
-<!--                    roleFormatter(authService.snapshot!.role)-->
-<!--                  )-->
-<!--                )-->
-<!--              }}-->
-<!--            </span>-->
-<!--          </div>-->
-<!--          <button matIconButton (click)="authService.signOut()">-->
-<!--            <mat-icon>logout</mat-icon>-->
-<!--          </button>-->
-<!--        </div>-->
-<!--      </div>-->
-<!--    }-->
-<!--  </mat-sidenav>-->
-<!--  <mat-sidenav-content id="drawer-content">-->
-<!--    <router-outlet></router-outlet>-->
-<!--  </mat-sidenav-content>-->
-<!--</mat-sidenav-container>-->
+<mat-toolbar id="header">
+  <button
+    matIconButton
+    [disabled]="!authService.isAuthenticated()"
+    (click)="authService.isAuthenticated() && drawer.toggle()"
+  >
+    <mat-icon>
+      {{ authService.isAuthenticated() ? 'menu' : 'waving_hand' }}
+    </mat-icon>
+  </button>
+  <span id="logo">ART2ART</span>
+  <mat-chip> 1.0 </mat-chip>
+  <span class="spacer"></span>
+  @if (authService.isAuthenticated()) {
+    <app-notification-actions></app-notification-actions>
+  }
+  <router-outlet name="actions"></router-outlet>
+</mat-toolbar>
+<mat-sidenav-container style="display: contents">
+  <mat-sidenav
+    id="drawer"
+    #drawer
+    fixedInViewport="true"
+    [opened]="authService.isAuthenticated()"
+    mode="side"
+    fixedTopGap="60"
+  >
+    @if (authService.isAuthenticated()) {
+      <div id="drawer-container">
+        <mat-nav-list>
+          @for (navItem of navItems(); track navItem.link) {
+            <mat-list-item [routerLink]="navItem.link">
+              <mat-icon matListItemIcon>{{ navItem.icon }}</mat-icon>
+              {{ navItem.label }}
+            </mat-list-item>
+          }
+        </mat-nav-list>
+        <span class="spacer"></span>
+        <div class="avatar-container">
+          <span class="avatar"></span>
+          <div>
+            <span style="font-weight: 500; font-size: 16px">
+              {{ authService.currentUser()!.name }}
+              {{ authService.currentUser()!.surname }}
+            </span>
+            <span style="font-weight: 500; font-size: 12px">
+              {{ roleFormatter(authService.userRole()!) }}
+            </span>
+          </div>
+          <button matIconButton (click)="authService.logout()">
+            <mat-icon>logout</mat-icon>
+          </button>
+        </div>
+      </div>
+    }
+  </mat-sidenav>
+  <mat-sidenav-content id="drawer-content">
+    <router-outlet></router-outlet>
+  </mat-sidenav-content>
+</mat-sidenav-container>

@@ -1,0 +1,206 @@
+<div class="page-container">
+  @if (loading()) {
+    <div class="loading-center"><mat-spinner /></div>
+  } @else {
+    @switch (currentUser()?.role) {
+      <!-- ── ARTIST Dashboard ──────────────────────────── -->
+      @case ('ROLE_ARTIST') {
+        <app-page-header
+          [title]="'Welcome, ' + (currentUser()?.name ?? 'Artist')"
+        />
+
+        <!-- Stat cards -->
+        <div class="stat-grid">
+          <mat-card appearance="outlined" class="stat-card">
+            <mat-card-content>
+              <div class="stat-icon">
+                <mat-icon color="primary">inbox</mat-icon>
+              </div>
+              <div class="stat-value">
+                {{ artistApplications().length }}
+              </div>
+              <div class="stat-label">Active Applications</div>
+            </mat-card-content>
+          </mat-card>
+          <mat-card appearance="outlined" class="stat-card">
+            <mat-card-content>
+              <div class="stat-icon">
+                <mat-icon color="accent">check_circle</mat-icon>
+              </div>
+              <div class="stat-value">{{ confirmedCount() }}</div>
+              <div class="stat-label">Confirmed Participations</div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+
+        <!-- Recent applications -->
+        @if (artistApplications().length > 0) {
+          <h3 class="section-title">Recent Applications</h3>
+          <mat-list>
+            @for (
+              app of artistApplications().slice(0, 5);
+              track app.id
+            ) {
+              <mat-list-item>
+                <span matListItemTitle
+                  >Program #{{ app.programId }}</span
+                >
+                <span matListItemLine>{{ app.motivation }}</span>
+                <!--                <app-status-badge-->
+                <!--                  matListItemMeta-->
+                <!--                  [status]="app.status!"-->
+                <!--                />-->
+              </mat-list-item>
+              <mat-divider />
+            }
+          </mat-list>
+          <button mat-button (click)="nav('/applications')">
+            View all applications →
+          </button>
+        } @else {
+          <app-empty-state
+            icon="search"
+            title="No applications yet"
+            message="Find a residency program and submit your first application"
+          >
+            <button
+              mat-flat-button
+              color="primary"
+              (click)="nav('/programs')"
+            >
+              Browse Programs
+            </button>
+          </app-empty-state>
+        }
+      }
+
+      <!-- ── RESIDENCE ADMIN Dashboard ─────────────────── -->
+      @case ('ROLE_RESIDENCE_ADMIN') {
+        <app-page-header
+          [title]="'Welcome, ' + (currentUser()?.name ?? 'Admin')"
+        >
+        </app-page-header>
+
+        <!-- Stats -->
+        <div class="stat-grid">
+          <mat-card appearance="outlined" class="stat-card">
+            <mat-card-content>
+              <div class="stat-icon">
+                <mat-icon color="primary">visibility</mat-icon>
+              </div>
+              <div class="stat-value">
+                {{ residenceStats()?.viewsCount ?? 0 }}
+              </div>
+              <div class="stat-label">Profile Views</div>
+            </mat-card-content>
+          </mat-card>
+          <mat-card appearance="outlined" class="stat-card">
+            <mat-card-content>
+              <div class="stat-icon">
+                <mat-icon color="accent">event</mat-icon>
+              </div>
+              <div class="stat-value">
+                {{ myPrograms().length }}
+              </div>
+              <div class="stat-label">Programs</div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+
+        <!-- Programs list -->
+        @if (myPrograms().length > 0) {
+          <h3 class="section-title">Your Programs</h3>
+          <div class="programs-grid">
+            @for (p of myPrograms().slice(0, 6); track p.id) {
+              <app-program-card
+                [program]="p"
+                [showManage]="true"
+                (viewClicked)="nav('/programs/' + $event)"
+                (manageClicked)="
+                  nav('/residences/me/programs/' + $event)
+                "
+              />
+            }
+          </div>
+          <button mat-button (click)="nav('/residences/me/programs')">
+            View all programs →
+          </button>
+        } @else {
+          <app-empty-state
+            icon="event"
+            title="No programs yet"
+            message="Create your first open call"
+          >
+            <button
+              mat-flat-button
+              color="primary"
+              (click)="nav('/residences/me/programs/new')"
+            >
+              Create Program
+            </button>
+          </app-empty-state>
+        }
+      }
+
+      <!-- ── EXPERT Dashboard ───────────────────────────── -->
+      @case ('ROLE_EXPERT') {
+        <app-page-header
+          [title]="'Welcome, ' + (currentUser()?.name ?? 'Expert')"
+        >
+        </app-page-header>
+
+        <div class="stat-grid">
+          <mat-card appearance="outlined" class="stat-card">
+            <mat-card-content>
+              <div class="stat-icon">
+                <mat-icon color="primary">event</mat-icon>
+              </div>
+              <div class="stat-value">
+                {{ expertPrograms().length }}
+              </div>
+              <div class="stat-label">Assigned Programs</div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+
+        @if (expertPrograms().length > 0) {
+          <h3 class="section-title">Your Programs</h3>
+          <div class="programs-grid">
+            @for (p of expertPrograms(); track p.id) {
+              <app-program-card
+                [program]="p"
+                (viewClicked)="nav('/programs/' + $event)"
+              />
+            }
+          </div>
+        } @else {
+          <app-empty-state
+            icon="rate_review"
+            title="No programs assigned"
+            message="Contact a residence admin to get assigned to a program"
+          />
+        }
+      }
+
+      <!-- ── SUPERADMIN Dashboard ───────────────────────── -->
+      @case ('ROLE_SUPERADMIN') {
+        <app-page-header title="Administration" />
+
+        <div class="admin-quick-links">
+          <button
+            mat-stroked-button
+            (click)="nav('/admin/validation')"
+          >
+            <mat-icon>verified</mat-icon> Validation Requests
+          </button>
+          <button mat-stroked-button (click)="nav('/users')">
+            <mat-icon>people</mat-icon> Users
+          </button>
+          <button mat-stroked-button (click)="nav('/programs')">
+            <mat-icon>event</mat-icon> All Programs
+          </button>
+        </div>
+      }
+    }
+  }
+</div>

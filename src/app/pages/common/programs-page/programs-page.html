@@ -1,0 +1,59 @@
+<div class="page-container">
+  <app-page-header title="Open Calls" />
+
+  @if (loading()) {
+    <div class="loading-center"><mat-spinner /></div>
+  } @else if (programs().length === 0) {
+    <app-empty-state
+      icon="event_busy"
+      title="No open calls right now"
+      message="Check back later for upcoming residency programs"
+    />
+  } @else {
+    <div class="programs-grid">
+      @for (p of programs(); track p.id) {
+        <app-program-card
+          [program]="p"
+          [showApply]="canApply()"
+          (viewClicked)="viewProgram($event)"
+          (applyClicked)="openApplyDialog($event)"
+        />
+      }
+    </div>
+
+    <mat-paginator
+      [length]="totalElements()"
+      [pageSize]="pageSize"
+      [pageIndex]="pageIndex()"
+      [pageSizeOptions]="[12, 24, 48]"
+      (page)="onPage($event)"
+    />
+  }
+
+  <!-- Apply Dialog (inline card panel) -->
+  @if (applyingProgramId() !== null) {
+    <div class="dialog-overlay" (click)="cancelApply()">
+      <mat-card
+        class="apply-dialog"
+        (click)="$event.stopPropagation()"
+      >
+        <mat-card-header>
+          <mat-card-title>Apply for Program</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <app-dynamic-form #applyForm [formConfig]="applyFields" />
+        </mat-card-content>
+        <mat-card-actions>
+          <button
+            mat-flat-button
+            color="primary"
+            (click)="submitApplication()"
+          >
+            Submit
+          </button>
+          <button mat-button (click)="cancelApply()">Cancel</button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+  }
+</div>

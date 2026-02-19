@@ -1,192 +1,160 @@
-import { Component, signal, viewChild } from '@angular/core';
-import { MatIcon } from '@angular/material/icon';
 import {
-  MatButton,
-  MatIconButton,
-  MatMiniFabButton,
-} from '@angular/material/button';
-import { MatBadge } from '@angular/material/badge';
-import {
-  MatMenu,
-  MatMenuItem,
-  MatMenuTrigger,
-} from '@angular/material/menu';
+  Component,
+  effect,
+  inject,
+  OnInit,
+  signal,
+} from '@angular/core';
 import {
   MatActionList,
-  MatDivider,
   MatListItem,
   MatListItemTitle,
   MatListModule,
 } from '@angular/material/list';
+import {
+  MatButtonModule,
+  MatIconButton,
+  MatMiniFabButton,
+} from '@angular/material/button';
+import { MatIcon, MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatChipsModule } from '@angular/material/chips';
+import {
+  MatPaginatorModule,
+  PageEvent,
+} from '@angular/material/paginator';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
+
+
+import { EmptyStateComponent } from '../../components/empty-state.component';
+
+import { NotificationService } from '../../services/notification.service';
+import type { NotificationDto } from '../../models';
+import { formatDate } from '../../formatters';
+import { MatBadge } from '@angular/material/badge';
+import {
+  MatMenuTrigger,
+  MatMenu,
+  MatMenuModule,
+} from '@angular/material/menu';
 import { MatTooltip } from '@angular/material/tooltip';
 
-type NotificationType =
-  | 'system'
-  | 'message'
-  | 'task'
-  | 'alert'
-  | 'update'
-  | 'reminder';
-
-interface Notification {
-  id: number;
-  title: string;
-  message: string;
-  timestamp: Date;
-  isRead: boolean;
-  type: NotificationType;
-  link?: string;
-}
+const CATEGORY_ICONS: Record<string, string> = {
+  SYSTEM: 'notifications',
+  INVITE: 'mail',
+  REVIEW: 'rate_review',
+  STATUS: 'info',
+};
 
 @Component({
   selector: 'app-notification-actions',
   imports: [
-    MatIcon,
-    MatBadge,
-    MatMiniFabButton,
-    MatMenuTrigger,
-    MatMenu,
-    MatActionList,
-    MatListItem,
-    MatListItemTitle,
     MatListModule,
-    MatIconButton,
+    MatButtonModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
+    MatChipsModule,
+    MatPaginatorModule,
+    MatDividerModule,
+    EmptyStateComponent,
+    MatBadge,
+    MatMenuModule,
     MatTooltip,
   ],
   templateUrl: './notification-actions.html',
   styleUrl: './notification-actions.scss',
 })
-export class NotificationActions {
-  isOpened = signal(false);
-  isLoading = signal(false);
+export class NotificationActions implements OnInit {
+  private readonly notificationService = inject(NotificationService);
+  private readonly snackBar = inject(MatSnackBar);
+  private readonly router = inject(Router);
 
-  notifications = signal<Notification[]>([
-    {
-      id: 1,
-      title: 'Новое сообщение',
-      message: 'У вас есть новое сообщение от администратора',
-      timestamp: new Date(Date.now() - 5 * 60000),
-      isRead: false,
-      type: 'message',
-      link: '/messages/123',
-    },
-    {
-      id: 2,
-      title: 'Важное обновление',
-      message:
-        'Доступна новая версия приложения. Рекомендуется обновить.',
-      timestamp: new Date(Date.now() - 2 * 3600000),
-      isRead: false,
-      type: 'update',
-    },
-    {
-      id: 3,
-      title: 'Новая задача',
-      message: 'Вам назначена задача "Подготовить отчет за квартал"',
-      timestamp: new Date(Date.now() - 24 * 3600000),
-      isRead: true,
-      type: 'task',
-      link: '/tasks/456',
-    },
-    {
-      id: 4,
-      title: 'Критическое предупреждение',
-      message: 'Обнаружена проблема с синхронизацией данных',
-      timestamp: new Date(Date.now() - 2 * 24 * 3600000),
-      isRead: true,
-      type: 'alert',
-    },
-    {
-      id: 5,
-      title: 'Напоминание',
-      message: 'Не забудьте про встречу сегодня в 15:00',
-      timestamp: new Date(Date.now() - 3 * 24 * 3600000),
-      isRead: true,
-      type: 'reminder',
-    },
-    {
-      id: 6,
-      title: 'Системное уведомление',
-      message: 'Плановое обслуживание системы завтра в 02:00',
-      timestamp: new Date(Date.now() - 5 * 24 * 3600000),
-      isRead: true,
-      type: 'system',
-    },
-  ]);
+  protected isOpened = signal(false);
 
-  unreadCount = signal(
-    this.notifications().filter((n) => !n.isRead).length
-  );
+  protected loading = signal(true);
+  protected notifications = signal<NotificationDto[]>([]);
+  protected totalElements = signal(0);
+  protected pageIndex = signal(0);
+  protected unreadCount = signal(0);
+  protected readonly pageSize = 20;
 
-  handleNotificationClick(notification: Notification): void {
-    this.markAsRead(notification.id);
+  protected readonly formatDate = formatDate;
 
-    if (notification.link) {
-      // Здесь можно добавить навигацию
-      console.log('Переход по ссылке:', notification.link);
-      // this.router.navigate([notification.link]);
-    }
+  constructor() {
+    effect(() => {
+      const isOpened = this.isOpened();
+      if (isOpened) {
+        this.notificationService
+          .getUnreadCount()
+          .subscribe((n) => this.unreadCount.set(n));
+        this.loadPage();
+      }
+    });
   }
 
-  markAsRead(id: number): void {
-    this.notifications.update((notifications) =>
-      notifications.map((n) =>
-        n.id === id ? { ...n, isRead: true } : n
-      )
-    );
-    this.updateUnreadCount();
+  ngOnInit() {
+    this.notificationService
+      .getUnreadCount()
+      .subscribe((n) => this.unreadCount.set(n));
+    this.loadPage();
   }
 
-  markAllAsRead(): void {
-    this.notifications.update((notifications) =>
-      notifications.map((n) => ({ ...n, isRead: true }))
-    );
-    this.updateUnreadCount();
+  private loadPage() {
+    this.loading.set(true);
+    this.notificationService
+      .getNotifications({
+        page: this.pageIndex(),
+        size: this.pageSize,
+      })
+      .subscribe((page) => {
+        this.notifications.set(page.content);
+        this.totalElements.set(page.totalElements);
+        this.loading.set(false);
+      });
   }
 
-  loadMore(): void {
-    this.isLoading.set(true);
-
-    // Симуляция загрузки данных с сервера
-    setTimeout(() => {
-      const newNotifications: Notification[] = [
-        {
-          id: Date.now(),
-          title: 'Загруженное уведомление',
-          message: 'Это новое уведомление, загруженное динамически',
-          timestamp: new Date(Date.now() - 7 * 24 * 3600000),
-          isRead: true,
-          type: 'system',
-        },
-      ];
-
-      this.notifications.update((current) => [
-        ...current,
-        ...newNotifications,
-      ]);
-      this.isLoading.set(false);
-    }, 1000);
+  onPage(event: PageEvent) {
+    this.pageIndex.set(event.pageIndex);
+    this.loadPage();
   }
 
-  getRelativeTime(date: Date): string {
-    const now = new Date();
-    const diff = now.getTime() - date.getTime();
-    const minutes = Math.floor(diff / 60000);
-    const hours = Math.floor(diff / 3600000);
-    const days = Math.floor(diff / 86400000);
-
-    if (minutes < 1) return 'Just now';
-    if (minutes < 60) return `${minutes} minutes ago`;
-    if (hours < 24) return `${hours} hours ago`;
-    if (days === 1) return 'Yesterday';
-    if (days < 7) return `${days} days ago`;
-
-    return date.toLocaleDateString('ru-RU');
+  markRead(event: Event, id: number) {
+    event.stopPropagation();
+    this.notificationService.markAsRead(id).subscribe(() => {
+      this.notifications.update((ns) =>
+        ns.map((n) =>
+          n.id === id ? { ...n, readAt: new Date().toISOString() } : n
+        )
+      );
+      this.unreadCount.update((c) => Math.max(0, c - 1));
+    });
   }
 
-  private updateUnreadCount(): void {
-    this.unreadCount.set(
-      this.notifications().filter((n) => !n.isRead).length
-    );
+  markAllRead() {
+    this.notificationService.markAllAsRead().subscribe(() => {
+      this.notifications.update((ns) =>
+        ns.map((n) => ({
+          ...n,
+          readAt: n.readAt ?? new Date().toISOString(),
+        }))
+      );
+      this.unreadCount.set(0);
+      this.snackBar.open(
+        'All notifications marked as read',
+        'Close',
+        { duration: 2000 }
+      );
+    });
+  }
+
+  handleClick(n: NotificationDto) {
+    if (!n.readAt) this.markRead(new Event('click'), n.id!);
+    if (n.link) this.router.navigateByUrl(n.link);
+  }
+
+  categoryIcon(category: string): string {
+    return CATEGORY_ICONS[category] ?? 'notifications';
   }
 }

@@ -5,10 +5,9 @@
 import { Component, input, output } from '@angular/core';
 import {
   MatListItem,
-  MatList,
   MatListItemIcon,
   MatListItemTitle,
-  MatListItemLine,
+  MatListItemLine
 } from '@angular/material/list';
 import { MatIcon } from '@angular/material/icon';
 import { MatIconButton } from '@angular/material/button';
@@ -29,7 +28,6 @@ const ACHIEVEMENT_ICONS: Record<string, string> = {
   standalone: true,
   imports: [
     MatListItem,
-    MatList,
     MatIcon,
     MatIconButton,
     MatChip,

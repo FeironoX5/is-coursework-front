@@ -9,7 +9,7 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -22,12 +22,12 @@ import { Validators } from '@angular/forms';
 import {
   DynamicForm,
   FieldConfig,
-} from '../components/dynamic-form.component';
-import { PageHeaderComponent } from '../components/page-header.component';
-import { EmptyStateComponent } from '../components/empty-state.component';
-import { ProgramCreateDto, ProgramPreviewDto } from '../models';
-import { ResidenceProgramService } from '../services/residence-program.service';
-import { formatDate } from '../formatters';
+} from '../../components/dynamic-form.component';
+import { PageHeaderComponent } from '../../components/page-header.component';
+import { EmptyStateComponent } from '../../components/empty-state.component';
+import { ProgramCreateDto, ProgramPreviewDto } from '../../models';
+import { ResidenceProgramService } from '../../services/residence-program.service';
+import { formatDate } from '../../formatters';
 
 const CREATE_PROGRAM_FIELDS: FieldConfig[] = [
   {
@@ -101,16 +101,14 @@ const CREATE_PROGRAM_FIELDS: FieldConfig[] = [
   ],
   template: `
     <div class="page-container">
-      <app-page-header
-        title="My Programs"
-        subtitle="Manage open calls for your residency"
-      >
+      <app-page-header title="My Programs">
         <button
           mat-flat-button
           color="primary"
           (click)="showCreate.set(!showCreate())"
         >
-          <mat-icon>add</mat-icon> New Program
+          <mat-icon>add</mat-icon>
+          New Program
         </button>
       </app-page-header>
 
@@ -142,7 +140,9 @@ const CREATE_PROGRAM_FIELDS: FieldConfig[] = [
       }
 
       @if (loading()) {
-        <div class="loading-center"><mat-spinner /></div>
+        <div class="loading-center">
+          <mat-spinner />
+        </div>
       } @else if (programs().length === 0) {
         <app-empty-state
           icon="event"
@@ -182,7 +182,7 @@ const CREATE_PROGRAM_FIELDS: FieldConfig[] = [
               <button
                 mat-icon-button
                 (click)="
-                  router.navigate(['/residences/me/programs', p.id])
+                  router.navigate([p.id], { relativeTo: route })
                 "
                 aria-label="Edit"
               >
@@ -233,6 +233,7 @@ export class ResidenceProgramsPage implements OnInit {
   private readonly programSvc = inject(ResidenceProgramService);
   private readonly snackBar = inject(MatSnackBar);
   protected readonly router = inject(Router);
+  protected readonly route = inject(ActivatedRoute);
 
   protected loading = signal(true);
   protected programs = signal<ProgramPreviewDto[]>([]);

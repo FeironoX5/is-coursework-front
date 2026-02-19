@@ -11,10 +11,9 @@ import {
   MatCardTitle,
   MatCardSubtitle,
 } from '@angular/material/card';
-import { MatButton, MatIconButton } from '@angular/material/button';
+import { MatButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
-import { MatChip } from '@angular/material/chips';
-import { MatTooltip } from '@angular/material/tooltip';
+
 import type { ProgramPreviewDto } from '../models';
 import { formatDate, daysUntil } from '../formatters';
 
@@ -29,10 +28,7 @@ import { formatDate, daysUntil } from '../formatters';
     MatCardTitle,
     MatCardSubtitle,
     MatButton,
-    MatIconButton,
     MatIcon,
-    MatChip,
-    MatTooltip,
   ],
   template: `
     <mat-card class="program-card" appearance="outlined">
@@ -115,7 +111,6 @@ import { formatDate, daysUntil } from '../formatters';
         align-items: center;
         gap: 6px;
         font-size: 13px;
-        color: rgba(0, 0, 0, 0.6);
       }
 
       .icon-sm {
@@ -125,9 +120,6 @@ import { formatDate, daysUntil } from '../formatters';
         line-height: 16px;
       }
 
-      .deadline-icon {
-        color: rgba(0, 0, 0, 0.38);
-      }
       .deadline-icon.urgent {
         color: #f57c00;
       }

@@ -5,7 +5,7 @@
   [matMenuTriggerFor]="notificationsMenu"
   [class.active]="isOpened()"
   matMiniFab
-  matBadge="7"
+  [matBadge]="unreadCount()"
 >
   <mat-icon>notifications</mat-icon>
 </button>
@@ -20,41 +20,58 @@
     <div class="notifications-menu-header">
       <h3>Notifications</h3>
       <div class="spacer"></div>
-      <button
-        matIconButton
-        matTooltip="Mark all as read"
-        (click)="markAllAsRead()"
-      >
-        <mat-icon>done_all</mat-icon>
-      </button>
-    </div>
-    <mat-action-list>
-      @for (notification of notifications(); track notification.id) {
+      @if (unreadCount() > 0) {
         <button
-          mat-list-item
-          [class.active]="!notification.isRead"
-          lines="3"
-          (click)="handleNotificationClick(notification)"
+          matIconButton
+          matTooltip="Mark all as read"
+          (click)="markAllRead()"
         >
-          <mat-icon matListItemIcon>
-            @switch (notification.type) {
-              @case ('system') {
-                settings
-              }
-              @default {
-                done
-              }
-            }
-          </mat-icon>
-          <span matListItemTitle>
-            {{ notification.title }}
-          </span>
-          {{ notification.message }}
-          <span style="opacity: 0.5; display: block; margin-top: 5px">
-            {{ getRelativeTime(notification.timestamp) }}
-          </span>
+          <mat-icon>done_all</mat-icon>
         </button>
       }
-    </mat-action-list>
+    </div>
+    @if (loading()) {
+      <div class="loading-center"><mat-spinner /></div>
+    } @else if (notifications().length === 0) {
+      <app-empty-state
+        icon="notifications_none"
+        title="All caught up!"
+        message="No notifications yet"
+      />
+    } @else {
+      <mat-action-list>
+        @for (
+          notification of notifications();
+          track notification.id
+        ) {
+          <button
+            mat-list-item
+            [class.active]="!notification.readAt"
+            lines="3"
+            (click)="handleClick(notification)"
+          >
+            <mat-icon matListItemIcon>
+              {{ categoryIcon(notification.category!) }}
+            </mat-icon>
+            <span matListItemTitle>
+              {{ notification.category }}
+            </span>
+            {{ notification.message }}
+            <span
+              style="opacity: 0.5; display: block; margin-top: 5px"
+            >
+              {{ formatDate(notification.createdAt) }}
+            </span>
+          </button>
+        }
+      </mat-action-list>
+      <mat-paginator
+        [hidePageSize]="true"
+        [length]="totalElements()"
+        [pageSize]="pageSize"
+        [pageIndex]="pageIndex()"
+        (page)="onPage($event)"
+      />
+    }
   </div>
 </mat-menu>

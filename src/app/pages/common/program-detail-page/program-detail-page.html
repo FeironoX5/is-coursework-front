@@ -1,0 +1,199 @@
+<div class="page-container">
+  @if (loading()) {
+    <div class="loading-center"><mat-spinner /></div>
+  } @else if (!program()) {
+    <app-empty-state icon="error" title="Program not found" />
+  } @else {
+    <app-page-header
+      [title]="program()!.previewDto?.title ?? 'Program'"
+    >
+      <!-- role-based action button -->
+      @switch (userRole()) {
+        @case ('ROLE_ARTIST') {
+          <button
+            mat-flat-button
+            color="primary"
+            [disabled]="(daysLeft() ?? -1) <= 0"
+            (click)="showApply.set(true)"
+          >
+            Apply Now
+          </button>
+        }
+        @case ('ROLE_RESIDENCE_ADMIN') {
+          <button
+            mat-stroked-button
+            (click)="
+              router.navigate([
+                '/residences/me/programs',
+                programId(),
+              ])
+            "
+          >
+            <mat-icon>edit</mat-icon> Manage
+          </button>
+        }
+      }
+    </app-page-header>
+
+    <!-- Deadline chip row -->
+    <div class="chips-row">
+      <mat-chip [class.urgent]="(daysLeft() ?? 999) <= 7">
+        <mat-icon>schedule</mat-icon>
+        Apply by
+        {{ formatDate(program()!.previewDto?.deadlineApply) }}
+        @if (daysLeft() !== null && daysLeft()! >= 0) {
+          · {{ daysLeft() }} days left
+        } @else {
+          · Closed
+        }
+      </mat-chip>
+      @if (program()!.durationDays) {
+        <mat-chip
+          ><mat-icon>event</mat-icon>
+          {{ program()!.durationDays }} days residency</mat-chip
+        >
+      }
+      @if (program()!.budgetQuota) {
+        <mat-chip
+          ><mat-icon>payments</mat-icon> €{{
+            program()!.budgetQuota?.toLocaleString()
+          }}</mat-chip
+        >
+      }
+      @if (program()!.peopleQuota) {
+        <mat-chip
+          ><mat-icon>people</mat-icon>
+          {{ program()!.peopleQuota }} spots</mat-chip
+        >
+      }
+    </div>
+
+    <mat-tab-group animationDuration="200ms" class="detail-tabs">
+      <!-- About -->
+      <mat-tab label="About">
+        <div class="tab-body">
+          @if (program()!.description) {
+            <p class="description">
+              {{ program()!.description }}
+            </p>
+          }
+
+          @if (program()!.goals && hasEntries(program()!.goals!)) {
+            <h4>Goals</h4>
+            <mat-list>
+              @for (
+                kv of objectEntries(program()!.goals!);
+                track kv[0]
+              ) {
+                <mat-list-item>
+                  <mat-icon matListItemIcon>arrow_right</mat-icon>
+                  <span matListItemTitle>{{ kv[1] }}</span>
+                </mat-list-item>
+              }
+            </mat-list>
+          }
+
+          @if (
+            program()!.conditions &&
+            hasEntries(program()!.conditions!)
+          ) {
+            <h4>Conditions</h4>
+            <mat-list>
+              @for (
+                kv of objectEntries(program()!.conditions!);
+                track kv[0]
+              ) {
+                <mat-list-item>
+                  <mat-icon matListItemIcon>check</mat-icon>
+                  <span matListItemTitle>{{ kv[0] }}</span>
+                  <span matListItemLine>{{ kv[1] }}</span>
+                </mat-list-item>
+              }
+            </mat-list>
+          }
+        </div>
+      </mat-tab>
+
+      <!-- Reviews -->
+      <mat-tab label="Reviews ({{ reviews().length }})">
+        <div class="tab-body">
+          @if (
+            userRole() === 'ROLE_ARTIST' && (daysLeft() ?? -1) < 0
+          ) {
+            <div class="leave-review">
+              <h4>Leave a review</h4>
+              <app-dynamic-form
+                #reviewForm
+                [formConfig]="reviewFields"
+              />
+              <button
+                mat-flat-button
+                color="primary"
+                (click)="submitReview()"
+              >
+                Submit Review
+              </button>
+            </div>
+            <mat-divider />
+          }
+
+          @if (reviews().length === 0) {
+            <app-empty-state
+              icon="star_outline"
+              title="No reviews yet"
+            />
+          } @else {
+            <mat-list>
+              @for (r of reviews(); track r.id) {
+                <mat-list-item class="review-item">
+                  <mat-icon matListItemIcon>person</mat-icon>
+                  <span matListItemTitle>{{ r.artistName }}</span>
+                  <span matListItemLine>
+                    <span class="stars"
+                      >{{ '★'.repeat(r.score ?? 0)
+                      }}{{ '☆'.repeat(10 - (r.score ?? 0)) }}</span
+                    >
+                    {{ r.comment }}
+                  </span>
+                </mat-list-item>
+                <mat-divider />
+              }
+            </mat-list>
+          }
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+
+    <!-- Apply Overlay -->
+    @if (showApply()) {
+      <div class="dialog-overlay" (click)="showApply.set(false)">
+        <mat-card
+          class="apply-dialog"
+          (click)="$event.stopPropagation()"
+        >
+          <mat-card-header>
+            <mat-card-title
+              >Apply for
+              {{ program()!.previewDto?.title }}</mat-card-title
+            >
+          </mat-card-header>
+          <mat-card-content>
+            <app-dynamic-form #applyForm [formConfig]="applyFields" />
+          </mat-card-content>
+          <mat-card-actions>
+            <button
+              mat-flat-button
+              color="primary"
+              (click)="submitApplication()"
+            >
+              Submit
+            </button>
+            <button mat-button (click)="showApply.set(false)">
+              Cancel
+            </button>
+          </mat-card-actions>
+        </mat-card>
+      </div>
+    }
+  }
+</div>

@@ -1,0 +1,97 @@
+<mat-card class="section-card">
+  <mat-card-header>
+    <mat-card-title>Portfolio</mat-card-title>
+    <button matIconButton (click)="openCreateWorkDialog()">
+      <mat-icon>add</mat-icon>
+    </button>
+  </mat-card-header>
+
+  <mat-card-content>
+    @if (works().length === 0) {
+      <p class="empty-state">No works yet</p>
+    } @else {
+      <mat-list>
+        @for (work of works(); track work.id) {
+          <mat-list-item lines="3">
+            <div matListItemTitle>{{ work.title }}</div>
+            <mat-chip style="margin: 10px 5px 10px 0">
+              {{ work.artDirection }}
+            </mat-chip>
+            {{ work.description }}
+            <div matListItemMeta>
+              <button
+                mat-icon-button
+                (click)="openUpdateWorkDialog(work)"
+              >
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                color="warn"
+                (click)="deleteWork(work.id)"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </mat-list-item>
+        }
+      </mat-list>
+    }
+  </mat-card-content>
+</mat-card>
+
+<mat-card class="section-card">
+  <mat-card-header>
+    <mat-card-title>Achievements</mat-card-title>
+    <button mat-icon-button (click)="openAchievementDialog()">
+      <mat-icon>add</mat-icon>
+    </button>
+  </mat-card-header>
+
+  <mat-card-content>
+    @if (achievements().length === 0) {
+      <p class="empty-state">No achievements yet</p>
+    } @else {
+      <mat-list>
+        @for (achievement of achievements(); track achievement.id) {
+          <mat-list-item lines="3">
+            <div matListItemTitle>{{ achievement.title }}</div>
+            <mat-chip style="margin: 10px 5px 10px 0">
+              {{ achievement.type }}
+            </mat-chip>
+            {{ achievement.description }}
+            <div matListItemMeta>
+              @if (achievement.type !== 'AUTO') {
+                <div class="achievement-actions">
+                  @if (achievement.link) {
+                    <a
+                      [href]="achievement.link"
+                      target="_blank"
+                      rel="noopener"
+                      mat-icon-button
+                    >
+                      <mat-icon>open_in_new</mat-icon>
+                    </a>
+                  }
+                  <button
+                    mat-icon-button
+                    (click)="openAchievementDialog(achievement)"
+                  >
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button
+                    mat-icon-button
+                    color="warn"
+                    (click)="deleteAchievement(achievement.id)"
+                  >
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+              }
+            </div>
+          </mat-list-item>
+        }
+      </mat-list>
+    }
+  </mat-card-content>
+</mat-card>

@@ -110,6 +110,7 @@ export class ArtistService {
   createMyProfile(
     body: ArtistProfileCreateDto
   ): Observable<ArtistProfileDto> {
+    console.log('createMyProfile', body);
     if (this.mode === 'test') return of({ ...FAKE_PROFILE, ...body });
     return this.http.post<ArtistProfileDto>(`${BASE}/me`, body);
   }

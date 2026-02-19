@@ -1,12 +1,4 @@
-import { inject } from '@angular/core';
-import {
-  HttpEvent,
-  HttpEventType,
-  HttpHandlerFn,
-  HttpInterceptorFn,
-  HttpRequest,
-} from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { HttpInterceptorFn } from '@angular/common/http';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const token = localStorage.getItem('token');

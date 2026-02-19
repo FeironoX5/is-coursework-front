@@ -1,0 +1,28 @@
+mat-chip {
+  margin-right: 5px;
+}
+
+mat-card-subtitle {
+  line-height: 1.1;
+  font-weight: 400;
+}
+
+.property {
+  padding: 0;
+}
+.property div[mat-card-avatar] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--mat-sys-surface-container-high);
+}
+.property div[mat-card-avatar] mat-icon {
+  color: #ccc;
+}
+
+.property mat-card-title {
+  font-size: 1.2em;
+}
+.property mat-card-subtitle {
+  font-size: 1em;
+}

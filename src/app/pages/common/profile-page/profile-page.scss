@@ -1,0 +1,41 @@
+.page-container {
+  padding: 32px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.loading-center {
+  display: flex;
+  justify-content: center;
+  padding: 80px;
+}
+
+.validation-banner {
+  margin-bottom: 24px;
+  border-left: 4px solid #9e9e9e !important;
+  &.approved {
+    border-left-color: #4caf50 !important;
+  }
+  &.pending {
+    border-left-color: #ff9800 !important;
+  }
+  &.rejected {
+    border-left-color: #f44336 !important;
+  }
+}
+.banner-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.banner-content span {
+  flex: 1;
+  font-size: 14px;
+}
+.tab-body {
+  padding: 24px 0;
+  display: flex;
+  gap: 15px;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+}

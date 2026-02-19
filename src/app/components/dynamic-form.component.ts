@@ -108,7 +108,7 @@ export class DynamicForm<T> {
             const validators = f.validators ?? [];
             return [
               f.propertyName,
-              [f.initialValue ?? '', ...validators],
+              [f.initialValue ?? '', validators],
             ];
           })
         )

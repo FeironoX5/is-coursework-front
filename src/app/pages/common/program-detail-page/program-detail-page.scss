@@ -1,0 +1,71 @@
+.page-container {
+  padding: 32px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+.loading-center {
+  display: flex;
+  justify-content: center;
+  padding: 80px;
+}
+
+.chips-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.detail-tabs {
+  margin-top: 8px;
+}
+.tab-body {
+  padding: 24px 0;
+}
+
+.description {
+  font-size: 15px;
+  line-height: 1.7;
+  white-space: pre-line;
+}
+
+h4 {
+  font-size: 15px;
+  font-weight: 600;
+  margin: 24px 0 8px;
+}
+
+.leave-review {
+  margin-bottom: 24px;
+  max-width: 480px;
+}
+
+.review-item {
+  height: auto !important;
+  padding: 12px 0;
+}
+.stars {
+  color: #f9a825;
+  letter-spacing: 2px;
+  margin-right: 8px;
+}
+
+.dialog-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.apply-dialog {
+  width: 100%;
+  max-width: 480px;
+  margin: 24px;
+}
+
+mat-chip.urgent {
+  background: #fff3e0 !important;
+  color: #e65100 !important;
+}

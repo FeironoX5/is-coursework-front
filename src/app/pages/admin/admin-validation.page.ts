@@ -22,20 +22,19 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatChipsModule } from '@angular/material/chips';
 
-import { PageHeaderComponent } from '../components/page-header.component';
-import { StatusBadgeComponent } from '../components/status-badge.component';
-import { EmptyStateComponent } from '../components/empty-state.component';
+import { PageHeaderComponent } from '../../components/page-header.component';
+import { EmptyStateComponent } from '../../components/empty-state.component';
 import {
   DynamicForm,
   type FieldConfig,
-} from '../components/dynamic-form.component';
+} from '../../components/dynamic-form.component';
 
-import { AdminService } from '../services/admin.service';
+import { AdminService } from '../../services/admin.service';
 import type {
   ResidenceDetailsDto,
   ValidationActionDto,
-} from '../models';
-import { formatDate } from '../formatters';
+} from '../../models';
+import { formatDate } from '../../formatters';
 
 const REJECT_FIELDS: FieldConfig[] = [
   {
@@ -59,19 +58,17 @@ const REJECT_FIELDS: FieldConfig[] = [
     MatExpansionModule,
     MatChipsModule,
     PageHeaderComponent,
-    StatusBadgeComponent,
     EmptyStateComponent,
     DynamicForm,
   ],
   template: `
     <div class="page-container">
-      <app-page-header
-        title="Validation Requests"
-        subtitle="Review and approve residence profile submissions"
-      />
+      <app-page-header title="Validation Requests" />
 
       @if (loading()) {
-        <div class="loading-center"><mat-spinner /></div>
+        <div class="loading-center">
+          <mat-spinner />
+        </div>
       } @else if (requests().length === 0) {
         <app-empty-state
           icon="verified"
@@ -83,16 +80,17 @@ const REJECT_FIELDS: FieldConfig[] = [
           @for (r of requests(); track r.id) {
             <mat-expansion-panel class="request-panel">
               <mat-expansion-panel-header>
-                <mat-panel-title>{{
-                  r.title ?? 'Unnamed Residence'
-                }}</mat-panel-title>
+                <mat-panel-title
+                  >{{ r.title ?? 'Unnamed Residence' }}
+                </mat-panel-title>
                 <mat-panel-description>
                   <span>{{ r.location }}</span>
-                  <app-status-badge
-                    [status]="
-                      r.validation?.validationStatus ?? 'PENDING'
-                    "
-                  />
+                  <!--                  <app-status-badge-->
+                  <!--                    [status]="-->
+                  <!--                      r.validation?.validationStatus ?? 'PENDING'-->
+                  <!--                    "-->
+                  <!--                  />-->
+                  <!--                  todo-->
                 </mat-panel-description>
               </mat-expansion-panel-header>
 
@@ -138,14 +136,16 @@ const REJECT_FIELDS: FieldConfig[] = [
                       color="primary"
                       (click)="approve(r.id!)"
                     >
-                      <mat-icon>check</mat-icon> Approve
+                      <mat-icon>check</mat-icon>
+                      Approve
                     </button>
                     <button
                       mat-stroked-button
                       color="warn"
                       (click)="startReject(r)"
                     >
-                      <mat-icon>close</mat-icon> Reject
+                      <mat-icon>close</mat-icon>
+                      Reject
                     </button>
                   </div>
 
@@ -244,7 +244,6 @@ const REJECT_FIELDS: FieldConfig[] = [
       .label {
         font-weight: 500;
         min-width: 100px;
-        color: rgba(0, 0, 0, 0.54);
       }
       .contact-item {
         display: block;
@@ -252,7 +251,6 @@ const REJECT_FIELDS: FieldConfig[] = [
 
       .description {
         font-size: 14px;
-        color: rgba(0, 0, 0, 0.6);
         margin: 0 0 16px;
       }
 
@@ -269,7 +267,6 @@ const REJECT_FIELDS: FieldConfig[] = [
 
       .already-decided {
         font-size: 14px;
-        color: rgba(0, 0, 0, 0.54);
         margin: 8px 0 0;
       }
     `,
