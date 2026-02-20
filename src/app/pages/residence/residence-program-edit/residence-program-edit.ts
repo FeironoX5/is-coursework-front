@@ -123,7 +123,6 @@ export class ResidenceProgramEdit implements OnInit {
   protected stats = signal<any>(null);
   protected programId = signal(0);
 
-  protected pendingApplications = signal<ApplicationDto[]>([]);
   protected evaluatedApplications = signal<ApplicationDto[]>([]);
 
   protected editFields = signal<FieldConfig[]>([]);
@@ -152,7 +151,7 @@ export class ResidenceProgramEdit implements OnInit {
         this.snackBar.open('Program not found', 'Close', {
           duration: 3000,
         });
-        this.router.navigate(['/residences/me/programs']);
+        this.router.navigate(['/ROLE_RESIDENCE_ADMIN/my_programs']);
       },
     });
   }
@@ -164,11 +163,6 @@ export class ResidenceProgramEdit implements OnInit {
   }
 
   private loadApplications(id: number) {
-    this.applicationService
-      .getUnevaluatedApplications(id)
-      .subscribe((page) =>
-        this.pendingApplications.set(page.content)
-      );
     this.applicationService
       .getEvaluatedApplications(id)
       .subscribe((page) =>

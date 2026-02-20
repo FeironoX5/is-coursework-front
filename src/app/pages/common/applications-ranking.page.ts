@@ -67,7 +67,7 @@ interface RankedApplication {
             mat-button
             (click)="
               router.navigate([
-                '/residences/me/programs',
+                '/ROLE_RESIDENCE_ADMIN/my_programs',
                 programId(),
               ])
             "
@@ -384,7 +384,7 @@ export class ApplicationsRankingPage implements OnInit {
         this.snackBar.open('Program not found', 'Close', {
           duration: 3000,
         });
-        this.router.navigate(['/residences/me/programs']);
+        this.router.navigate(['/ROLE_RESIDENCE_ADMIN/my_programs']);
       },
     });
   }

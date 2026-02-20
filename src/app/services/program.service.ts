@@ -123,14 +123,14 @@ export class ProgramService {
     );
   }
 
-  /** POST /api/programs/futher-action/{programId} */
+  /** POST /api/programs/further-action/{applicationId} — Send further action info to approved application */
   sendFurtherActions(
-    programId: number,
+    applicationId: number,
     body: SendFurtherActionsDto
   ): Observable<void> {
     if (this.mode === 'test') return of(undefined);
     return this.http.post<void>(
-      `${BASE}/futher-action/${programId}`,
+      `${BASE}/further-action/${applicationId}`,
       body
     );
   }

@@ -33,10 +33,15 @@ import { ApplicationService } from '../../../services/application.service';
 import type {
   ApplicationDto,
   ApplicationEvaluationCreateDto,
+  ProgramPreviewDto,
   UserDto,
 } from '../../../models';
 import { NgTemplateOutlet } from '@angular/common';
 import { StatusBadgeComponent } from '../../../components/chip.components';
+import { MatFormField, MatLabel } from '@angular/material/input';
+import { MatOption, MatSelect } from '@angular/material/select';
+import { ResidenceProgramService } from '../../../services/residence-program.service';
+import { ExpertService } from '../../../services/expert.service';
 
 const EVALUATE_FIELDS: FieldConfig[] = [
   {
@@ -75,6 +80,10 @@ const EVALUATE_FIELDS: FieldConfig[] = [
     DynamicForm,
     NgTemplateOutlet,
     StatusBadgeComponent,
+    MatFormField,
+    MatLabel,
+    MatSelect,
+    MatOption,
   ],
   templateUrl: './applications-page.html',
   styleUrl: './applications-page.scss',
@@ -83,6 +92,10 @@ export class ApplicationsPage implements OnInit {
   private readonly userService = inject(UserService);
   private readonly artistService = inject(ArtistService);
   private readonly applicationService = inject(ApplicationService);
+  private readonly residenceProgramSvc = inject(
+    ResidenceProgramService
+  );
+  private readonly expertService = inject(ExpertService);
   private readonly snackBar = inject(MatSnackBar);
 
   protected loading = signal(true);
@@ -91,11 +104,15 @@ export class ApplicationsPage implements OnInit {
   // artist
   protected artistApplications = signal<ApplicationDto[]>([]);
   protected artistHistory = signal<ApplicationDto[]>([]);
+
   // expert
+  protected expertPrograms = signal<ProgramPreviewDto[]>([]);
   protected expertApplications = signal<ApplicationDto[]>([]);
   protected evaluatingApp = signal<ApplicationDto | null>(null);
+
   // admin
-  protected adminPendingApps = signal<ApplicationDto[]>([]);
+  protected myPrograms = signal<ProgramPreviewDto[]>([]);
+  protected selectedProgramId = signal<number | null>(null);
   protected adminEvaluatedApps = signal<ApplicationDto[]>([]);
 
   readonly artistColumns = ['program', 'status', 'actions'];
@@ -133,25 +150,58 @@ export class ApplicationsPage implements OnInit {
         .subscribe((p) => this.artistHistory.set(p.content));
     }
     if (role === 'ROLE_EXPERT') {
-      // Expert sees unevaluated apps — need a program context; show generic list here
-      this.applicationService
-        .getUnevaluatedApplications(0)
-        .subscribe((p) => {
-          this.expertApplications.set(p.content);
+      // Load programs assigned to this expert
+      this.expertService.getMyPrograms().subscribe((p) => {
+        this.expertPrograms.set(p.content);
+        if (p.content.length > 0) {
+          this.selectedProgramId.set(p.content[0].id!);
+          this.loadExpertApplications();
+        } else {
           this.loading.set(false);
-        });
+        }
+      });
     }
     if (role === 'ROLE_RESIDENCE_ADMIN') {
-      this.applicationService
-        .getUnevaluatedApplications(0)
-        .subscribe((p) => {
-          this.adminPendingApps.set(p.content);
+      this.residenceProgramSvc.getPrograms().subscribe((p) => {
+        this.myPrograms.set(p.content);
+        if (p.content.length > 0) {
+          this.selectedProgramId.set(p.content[0].id!);
+          this.loadAdminApplications();
+        } else {
           this.loading.set(false);
-        });
-      this.applicationService
-        .getEvaluatedApplications(0)
-        .subscribe((p) => this.adminEvaluatedApps.set(p.content));
+        }
+      });
     }
+  }
+
+  loadExpertApplications() {
+    const programId = this.selectedProgramId();
+    if (programId === null) return;
+
+    this.loading.set(true);
+    // GET /api/applications/programs/{programId} - returns unevaluated applications for current expert
+    this.applicationService
+      .getUnevaluatedApplications(programId)
+      .subscribe((p) => {
+        this.expertApplications.set(p.content);
+        this.loading.set(false);
+      });
+  }
+
+  loadAdminApplications() {
+    const programId = this.selectedProgramId();
+    if (programId === null) return;
+
+    this.loading.set(true);
+    // For admin - we show unevaluated in "Pending" tab
+    // But actually admin should see all applications, not just unevaluated
+    // Let's load evaluated applications for both tabs
+    this.applicationService
+      .getEvaluatedApplications(programId)
+      .subscribe((p) => {
+        this.adminEvaluatedApps.set(p.content);
+        this.loading.set(false);
+      });
   }
 
   // Artist actions
@@ -176,9 +226,10 @@ export class ApplicationsPage implements OnInit {
   }
 
   // Expert actions
-  openEvaluatePanel(app: ApplicationDto) {
+  openEvaluateDialog(app: ApplicationDto) {
     this.evaluatingApp.set(app);
   }
+
   cancelEvaluate() {
     this.evaluatingApp.set(null);
   }
@@ -189,16 +240,18 @@ export class ApplicationsPage implements OnInit {
       form?.markAllTouched();
       return;
     }
+
     this.applicationService
       .evaluateApplication(
         this.evaluatingApp()!.id!,
         form.values as ApplicationEvaluationCreateDto
       )
       .subscribe(() => {
-        this.snackBar.open('Evaluation saved', 'Close', {
+        this.snackBar.open('Evaluation submitted', 'Close', {
           duration: 2000,
         });
         this.cancelEvaluate();
+        this.loadExpertApplications(); // Reload to remove evaluated application
       });
   }
 
@@ -206,9 +259,7 @@ export class ApplicationsPage implements OnInit {
   approveApp(id: number) {
     this.applicationService.approveApplication(id).subscribe(() => {
       this.snackBar.open('Approved', 'Close', { duration: 2000 });
-      this.adminPendingApps.update((as) =>
-        as.filter((a) => a.id !== id)
-      );
+      this.loadAdminApplications();
     });
   }
 
@@ -217,15 +268,14 @@ export class ApplicationsPage implements OnInit {
       this.snackBar.open('Added to reserve list', 'Close', {
         duration: 2000,
       });
+      this.loadAdminApplications();
     });
   }
 
   rejectApp(id: number) {
     this.applicationService.rejectApplication(id).subscribe(() => {
       this.snackBar.open('Rejected', 'Close', { duration: 2000 });
-      this.adminPendingApps.update((as) =>
-        as.filter((a) => a.id !== id)
-      );
+      this.loadAdminApplications();
     });
   }
 }

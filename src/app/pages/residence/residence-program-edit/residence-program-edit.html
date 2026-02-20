@@ -16,7 +16,7 @@
         mat-stroked-button
         (click)="
           router.navigate([
-            '/residences/me/programs',
+            '/ROLE_RESIDENCE_ADMIN/my_programs',
             programId(),
             'experts',
           ])
@@ -28,7 +28,7 @@
         mat-stroked-button
         (click)="
           router.navigate([
-            '/residences/me/programs',
+            '/ROLE_RESIDENCE_ADMIN/my_programs',
             programId(),
             'ranking',
           ])
@@ -60,7 +60,11 @@
               </button>
               <button
                 mat-button
-                (click)="router.navigate(['/residences/me/programs'])"
+                (click)="
+                  router.navigate([
+                    '/ROLE_RESIDENCE_ADMIN/my_programs',
+                  ])
+                "
               >
                 Cancel
               </button>
@@ -102,59 +106,6 @@
           </div>
 
           <mat-divider />
-
-          <h4 class="section-title">Pending Review</h4>
-          @if (pendingApplications().length === 0) {
-            <p class="empty-text">No pending applications</p>
-          } @else {
-            <div class="application-list">
-              @for (app of pendingApplications(); track app.id) {
-                <mat-card appearance="outlined" class="app-card">
-                  <mat-card-content>
-                    <div class="app-row">
-                      <div class="app-info">
-                        <div class="app-id">
-                          Application #{{ app.id }}
-                        </div>
-                        <div class="app-motivation">
-                          {{ app.motivation }}
-                        </div>
-                      </div>
-                      <div class="app-actions">
-                        <app-chip [status]="app.status!" />
-                        <button
-                          mat-icon-button
-                          [matMenuTriggerFor]="menu"
-                        >
-                          <mat-icon>more_vert</mat-icon>
-                        </button>
-                        <mat-menu #menu>
-                          <button
-                            mat-menu-item
-                            (click)="approveApp(app.id!)"
-                          >
-                            <mat-icon>check</mat-icon> Approve
-                          </button>
-                          <button
-                            mat-menu-item
-                            (click)="reserveApp(app.id!)"
-                          >
-                            <mat-icon>bookmark</mat-icon> Reserve
-                          </button>
-                          <button
-                            mat-menu-item
-                            (click)="rejectApp(app.id!)"
-                          >
-                            <mat-icon>close</mat-icon> Reject
-                          </button>
-                        </mat-menu>
-                      </div>
-                    </div>
-                  </mat-card-content>
-                </mat-card>
-              }
-            </div>
-          }
 
           <h4 class="section-title">Evaluated</h4>
           @if (evaluatedApplications().length === 0) {

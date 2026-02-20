@@ -74,9 +74,7 @@ export class ApplicationService {
   private readonly http = inject(HttpClient);
   private readonly mode = inject(MODE);
 
-  // ── Status transitions ────────────────────────────────────
-
-  /** POST /api/applications/approve/{applicationId} */
+  /** POST /api/applications/approve/{applicationId} — Residence admin approves */
   approveApplication(applicationId: number): Observable<void> {
     if (this.mode === 'test') return of(undefined);
     return this.http.post<void>(
@@ -85,7 +83,7 @@ export class ApplicationService {
     );
   }
 
-  /** POST /api/applications/reject/{applicationId} */
+  /** POST /api/applications/reject/{applicationId} — Residence admin rejects */
   rejectApplication(applicationId: number): Observable<void> {
     if (this.mode === 'test') return of(undefined);
     return this.http.post<void>(
@@ -94,7 +92,7 @@ export class ApplicationService {
     );
   }
 
-  /** POST /api/applications/reserve/{applicationId} */
+  /** POST /api/applications/reserve/{applicationId} — Residence admin moves to reserve */
   reserveApplication(applicationId: number): Observable<void> {
     if (this.mode === 'test') return of(undefined);
     return this.http.post<void>(
@@ -103,7 +101,7 @@ export class ApplicationService {
     );
   }
 
-  /** POST /api/applications/evaluate/{applicationId} */
+  /** POST /api/applications/evaluate/{applicationId} — Expert evaluates */
   evaluateApplication(
     applicationId: number,
     body: ApplicationEvaluationCreateDto
@@ -115,9 +113,9 @@ export class ApplicationService {
     );
   }
 
-  // ── Queries by program ────────────────────────────────────
+  // ── Queries by program (CORRECTED) ────────────────────────
 
-  /** GET /api/applications/programs/{programId} — unevaluated */
+  /** GET /api/applications/programs/{programId} — Expert's unevaluated applications */
   getUnevaluatedApplications(
     programId: number,
     pageable?: Pageable
@@ -130,7 +128,7 @@ export class ApplicationService {
     );
   }
 
-  /** GET /api/applications/programs/evaluated/{programId} */
+  /** GET /api/applications/programs/evaluated/{programId} — Residence admin's evaluated applications */
   getEvaluatedApplications(
     programId: number,
     pageable?: Pageable
@@ -143,7 +141,14 @@ export class ApplicationService {
             programId,
             userId: 12,
             motivation: 'Well-evaluated candidate.',
-            status: 'APPROVED',
+            status: 'REVIEWED',
+          },
+          {
+            id: 4,
+            programId,
+            userId: 13,
+            motivation: 'Top portfolio.',
+            status: 'REVIEWED',
           },
         ])
       );
@@ -156,7 +161,7 @@ export class ApplicationService {
 
   // ── Reviews (evaluations) ─────────────────────────────────
 
-  /** GET /api/applications/reviews/{applicationId} */
+  /** GET /api/applications/reviews/{applicationId} — Get all reviews for application */
   getApplicationReviews(
     applicationId: number,
     pageable?: Pageable
@@ -183,7 +188,7 @@ export class ApplicationService {
     );
   }
 
-  /** GET /api/applications/me/reviews/{applicationId} — current expert's review */
+  /** GET /api/applications/me/reviews/{applicationId} — Current expert's review */
   getMyApplicationReview(
     applicationId: number,
     pageable?: Pageable
@@ -207,7 +212,7 @@ export class ApplicationService {
 
   // ── Rating ────────────────────────────────────────────────
 
-  /** GET /api/applications/ratings/{applicationId} */
+  /** GET /api/applications/ratings/{applicationId} — Calculate average rating */
   calculateApplicationRating(
     applicationId: number
   ): Observable<number> {

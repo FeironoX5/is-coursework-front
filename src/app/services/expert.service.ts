@@ -64,7 +64,7 @@ export class ExpertService {
   private readonly mode = inject(MODE);
 
   /** GET /api/experts */
-  getExpertsProfile(pageable?: Pageable): Observable<PageExpertDto> {
+  getExperts(pageable?: Pageable): Observable<PageExpertDto> {
     if (this.mode === 'test') {
       return of(
         fakePage([
@@ -128,31 +128,7 @@ export class ExpertService {
       { params: toHttpParams(pageable) }
     );
   }
-
-  /** GET /api/experts/search?query={query} — search experts */
-  searchExperts(
-    query: string,
-    pageable?: Pageable
-  ): Observable<PageUserDto> {
-    if (this.mode === 'test') {
-      return of(
-        fakePage([
-          {
-            id: 12,
-            username: 'expert3@example.com',
-            name: 'Olga',
-            surname: 'Smirnova',
-            role: 'ROLE_EXPERT',
-            isActive: true,
-          },
-        ])
-      );
-    }
-    let params = toHttpParams(pageable);
-    params = params.set('query', query);
-    return this.http.get<PageUserDto>(`${BASE}/search`, { params });
-  }
-
+  //@PostMapping('{id}/programs/{programId}/assign')
   /** POST /api/experts/programs/{programId}/assign/{expertId} */
   assignExpertToProgram(
     programId: number,
@@ -160,7 +136,7 @@ export class ExpertService {
   ): Observable<void> {
     if (this.mode === 'test') return of(undefined);
     return this.http.post<void>(
-      `${BASE}/programs/${programId}/assign/${expertId}`,
+      `${BASE}/${expertId}/programs/${programId}/assign`,
       null
     );
   }
