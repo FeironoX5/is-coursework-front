@@ -45,6 +45,6 @@ export class NotificationBellComponent implements OnInit {
   }
 
   navigate() {
-    this.router.navigate(['/notifications']);
+    this.router.navigate(['/applications']);
   }
 }

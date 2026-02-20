@@ -169,7 +169,7 @@ const CREATE_PROGRAM_FIELDS: FieldConfig[] = [
             <th mat-header-cell *matHeaderCellDef>Published</th>
             <td mat-cell *matCellDef="let p">
               <mat-slide-toggle
-                [checked]="p.isPublished ?? false"
+                [checked]="publishedIds().has(p.id!)"
                 [disabled]="isPublishing(p.id)"
                 color="primary"
                 (change)="togglePublish(p, $event.checked)"
@@ -238,6 +238,7 @@ export class ResidenceProgramsPage implements OnInit {
 
   protected loading = signal(true);
   protected programs = signal<ProgramPreviewDto[]>([]);
+  protected publishedIds = signal<Set<number>>(new Set());
   protected publishingIds = signal<Set<number>>(new Set());
   protected showCreate = signal(false);
 
@@ -251,7 +252,27 @@ export class ResidenceProgramsPage implements OnInit {
   ngOnInit() {
     this.programSvc.getPrograms().subscribe((page) => {
       this.programs.set(page.content);
+      this.syncPublishedState(page.content);
       this.loading.set(false);
+    });
+  }
+
+
+  private syncPublishedState(programs: ProgramPreviewDto[]) {
+    this.publishedIds.set(new Set());
+    programs.forEach((program) => {
+      if (!program.id) return;
+      this.programSvc.getProgramById(program.id).subscribe((dto) => {
+        this.publishedIds.update((ids) => {
+          const next = new Set(ids);
+          if (dto.isPublished) {
+            next.add(program.id!);
+          } else {
+            next.delete(program.id!);
+          }
+          return next;
+        });
+      });
     });
   }
 
@@ -286,13 +307,11 @@ export class ResidenceProgramsPage implements OnInit {
       : this.programSvc.unpublishProgram(p.id!);
     action.subscribe({
       next: () => {
-        this.programs.update((programs) =>
-          programs.map((program) =>
-            program.id === p.id
-              ? { ...program, isPublished: publish }
-              : program
-          )
-        );
+        this.publishedIds.update((ids) => {
+          const next = new Set(ids);
+          publish ? next.add(p.id!) : next.delete(p.id!);
+          return next;
+        });
         this.snackBar.open(
           publish ? 'Published' : 'Unpublished',
           'Close',

@@ -23,7 +23,6 @@ const FAKE_PREVIEW: ProgramPreviewDto = {
   residenceId: 1,
   title: 'Summer Residency 2024',
   deadlineApply: '2024-05-31',
-  isPublished: true,
 };
 
 const FAKE_PROGRAM: ProgramDto = {
@@ -100,7 +99,6 @@ export class ResidenceProgramService {
             id: 11,
             title: 'Winter Retreat 2025',
             deadlineApply: '2024-11-30',
-            isPublished: false,
           },
         ])
       );

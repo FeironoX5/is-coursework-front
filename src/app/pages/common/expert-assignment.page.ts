@@ -63,8 +63,7 @@ import {
             mat-button
             (click)="
               router.navigate([
-                '/residences/me/programs',
-                programId(),
+                '/ROLE_RESIDENCE_ADMIN/my_programs',
               ])
             "
           >
@@ -264,7 +263,7 @@ export class ExpertAssignmentPage implements OnInit {
       .getExperts({ page: this.pageIndex(), size: this.pageSize })
       .subscribe((page) => {
         this.experts.set(page.content);
-        this.totalElements.set(page.content.length);
+        this.totalElements.set(page.totalElements);
       });
   }
 

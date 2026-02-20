@@ -162,7 +162,7 @@ const INVITE_FIELDS = (
 
         <mat-paginator
           [length]="totalElements()"
-          [pageSize]="pageSize"
+          [pageSize]="pageSize()"
           [pageIndex]="pageIndex()"
           [pageSizeOptions]="[12, 24, 48]"
           (page)="onPage($event)"
@@ -257,7 +257,7 @@ export class ArtistsPage implements OnInit {
   protected artists = signal<ArtistProfileDto[]>([]);
   protected totalElements = signal(0);
   protected pageIndex = signal(0);
-  protected readonly pageSize = 12;
+  protected pageSize = signal(12);
 
   protected searchQuery = signal('');
 
@@ -271,7 +271,7 @@ export class ArtistsPage implements OnInit {
     this.artistService
       .getArtistProfiles({
         page: this.pageIndex(),
-        size: this.pageSize,
+        size: this.pageSize(),
       })
       .subscribe((page) => {
         let filtered = page.content;
@@ -306,6 +306,7 @@ export class ArtistsPage implements OnInit {
   }
 
   onPage(event: PageEvent) {
+    this.pageSize.set(event.pageSize);
     this.pageIndex.set(event.pageIndex);
     this.loadArtists();
   }
