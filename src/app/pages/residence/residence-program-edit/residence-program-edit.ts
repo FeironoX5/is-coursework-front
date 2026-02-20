@@ -5,18 +5,18 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { MatCardModule } from '@angular/material/card';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatTabsModule } from '@angular/material/tabs';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatDividerModule } from '@angular/material/divider';
-import { MatMenuModule } from '@angular/material/menu';
-import { Validators } from '@angular/forms';
-import { formatDate } from '../../../formatters';
+import {ActivatedRoute, Router} from '@angular/router';
+import {MatCardModule} from '@angular/material/card';
+import {MatButtonModule} from '@angular/material/button';
+import {MatIconModule} from '@angular/material/icon';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {MatTabsModule} from '@angular/material/tabs';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import {MatSnackBar} from '@angular/material/snack-bar';
+import {MatDividerModule} from '@angular/material/divider';
+import {MatMenuModule} from '@angular/material/menu';
+import {Validators} from '@angular/forms';
+import {formatDate} from '../../../formatters';
 import {
   DynamicForm,
   FieldConfig,
@@ -24,13 +24,29 @@ import {
 import {
   ApplicationDto,
   ProgramDto,
-  ProgramUpdateDto,
+  ProgramUpdateDto, SendFurtherActionsDto,
 } from '../../../models';
-import { PageHeaderComponent } from '../../../components/page-header.component';
-import { ResidenceProgramService } from '../../../services/residence-program.service';
-import { ApplicationService } from '../../../services/application.service';
-import { StatusBadgeComponent } from '../../../components/chip.components';
+import {PageHeaderComponent} from '../../../components/page-header.component';
+import {ResidenceProgramService} from '../../../services/residence-program.service';
+import {ApplicationService} from '../../../services/application.service';
+import {StatusBadgeComponent} from '../../../components/chip.components';
+import {ProgramService} from '../../../services/program.service';
 
+const ACTIONS_FIELDS: FieldConfig[] = [
+  {
+    type: 'input',
+    propertyName: 'message',
+    displayName: 'Message',
+    dataType: 'text',
+    validators: [Validators.required],
+  },
+  {
+    type: 'input',
+    propertyName: 'link',
+    displayName: 'Link',
+    dataType: 'text',
+  },
+];
 const EDIT_FIELDS = (p: ProgramDto): FieldConfig[] => [
   {
     type: 'input',
@@ -93,6 +109,7 @@ const EDIT_FIELDS = (p: ProgramDto): FieldConfig[] => [
     initialValue: String(p.peopleQuota ?? ''),
   },
 ];
+
 @Component({
   selector: 'app-residence-program-edit',
   imports: [
@@ -115,6 +132,7 @@ export class ResidenceProgramEdit implements OnInit {
   private readonly route = inject(ActivatedRoute);
   protected readonly router = inject(Router);
   private readonly programService = inject(ResidenceProgramService);
+  private readonly realProgramService = inject(ProgramService);
   private readonly applicationService = inject(ApplicationService);
   private readonly snackBar = inject(MatSnackBar);
 
@@ -126,10 +144,14 @@ export class ResidenceProgramEdit implements OnInit {
   protected evaluatedApplications = signal<ApplicationDto[]>([]);
 
   protected editFields = signal<FieldConfig[]>([]);
+  protected actionsFields = signal<FieldConfig[]>(ACTIONS_FIELDS);
   protected readonly editForm =
     viewChild<DynamicForm<ProgramUpdateDto>>('editForm');
+  protected readonly actionsForm =
+    viewChild<DynamicForm<SendFurtherActionsDto>>('actionsForm');
 
   protected readonly formatDate = formatDate;
+  protected readonly showActions = signal<boolean>(false);
 
   ngOnInit() {
     const id = Number(this.route.snapshot.paramMap.get('id'));
@@ -170,6 +192,33 @@ export class ResidenceProgramEdit implements OnInit {
       );
   }
 
+  toggleActions() {
+    this.showActions.update(v => !v);
+  }
+
+  sendActions() {
+    const form = this.actionsForm();
+    if (!form?.valid) {
+      form?.markAllTouched();
+      return;
+    }
+    this.realProgramService.sendFurtherActions(
+      this.programId(),
+      form.values as SendFurtherActionsDto
+    )
+      .subscribe({
+        next: () => {
+          this.snackBar.open('Sent!', 'Close', {
+            duration: 2000,
+          });
+        },
+        error: () =>
+          this.snackBar.open('Sending failed', 'Close', {
+            duration: 3000,
+          }),
+      });
+  }
+
   saveProgram() {
     const form = this.editForm();
     if (!form?.valid) {
@@ -202,12 +251,12 @@ export class ResidenceProgramEdit implements OnInit {
     action.subscribe({
       next: () => {
         this.program.update((p) =>
-          p ? { ...p, isPublished: publish } : p
+          p ? {...p, isPublished: publish} : p
         );
         this.snackBar.open(
           publish ? 'Published' : 'Unpublished',
           'Close',
-          { duration: 1500 }
+          {duration: 1500}
         );
       },
     });
@@ -215,7 +264,7 @@ export class ResidenceProgramEdit implements OnInit {
 
   approveApp(id: number) {
     this.applicationService.approveApplication(id).subscribe(() => {
-      this.snackBar.open('Approved', 'Close', { duration: 2000 });
+      this.snackBar.open('Approved', 'Close', {duration: 2000});
       this.loadApplications(this.programId());
     });
   }
@@ -231,7 +280,7 @@ export class ResidenceProgramEdit implements OnInit {
 
   rejectApp(id: number) {
     this.applicationService.rejectApplication(id).subscribe(() => {
-      this.snackBar.open('Rejected', 'Close', { duration: 2000 });
+      this.snackBar.open('Rejected', 'Close', {duration: 2000});
       this.loadApplications(this.programId());
     });
   }

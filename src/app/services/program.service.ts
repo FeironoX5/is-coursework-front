@@ -125,12 +125,11 @@ export class ProgramService {
 
   /** POST /api/programs/further-action/{applicationId} — Send further action info to approved application */
   sendFurtherActions(
-    applicationId: number,
+    programId: number,
     body: SendFurtherActionsDto
   ): Observable<void> {
-    if (this.mode === 'test') return of(undefined);
     return this.http.post<void>(
-      `${BASE}/further-action/${applicationId}`,
+      `${BASE}/further-action/${programId}`,
       body
     );
   }

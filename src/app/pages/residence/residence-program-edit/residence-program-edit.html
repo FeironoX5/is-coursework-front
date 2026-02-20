@@ -1,6 +1,8 @@
 <div class="page-container">
   @if (loading()) {
-    <div class="loading-center"><mat-spinner /></div>
+    <div class="loading-center">
+      <mat-spinner/>
+    </div>
   } @else if (program()) {
     <app-page-header
       [title]="program()!.previewDto?.title ?? 'Edit Program'"
@@ -22,7 +24,8 @@
           ])
         "
       >
-        <mat-icon>people</mat-icon> Manage Experts
+        <mat-icon>people</mat-icon>
+        Manage Experts
       </button>
       <button
         mat-stroked-button
@@ -34,13 +37,23 @@
           ])
         "
       >
-        <mat-icon>leaderboard</mat-icon> View Ranking
+        <mat-icon>leaderboard</mat-icon>
+        View Ranking
+      </button>
+      <button
+        mat-stroked-button
+        (click)="
+          toggleActions()
+        "
+      >
+        Actions
       </button>
       <button
         mat-stroked-button
         (click)="router.navigate(['/programs', programId()])"
       >
-        <mat-icon>visibility</mat-icon> Preview
+        <mat-icon>visibility</mat-icon>
+        Preview
       </button>
     </app-page-header>
 
@@ -49,14 +62,25 @@
       <mat-tab label="Details">
         <div class="tab-body">
           <div class="form-section">
-            <app-dynamic-form #editForm [formConfig]="editFields()" />
+            @if (showActions()) {
+              <app-dynamic-form #actionsForm [formConfig]="actionsFields()"/>
+              <button
+                mat-flat-button
+                color="primary"
+                (click)="sendActions()"
+              >
+                Send actions
+              </button>
+            }
+            <app-dynamic-form #editForm [formConfig]="editFields()"/>
             <div class="form-actions">
               <button
                 mat-flat-button
                 color="primary"
                 (click)="saveProgram()"
               >
-                <mat-icon>save</mat-icon> Save Changes
+                <mat-icon>save</mat-icon>
+                Save Changes
               </button>
               <button
                 mat-button
@@ -82,30 +106,30 @@
             <div class="stat-item">
               <span class="stat-label">Total Applications</span>
               <span class="stat-value">{{
-                stats()?.applicationsCount ?? 0
-              }}</span>
+                  stats()?.applicationsCount ?? 0
+                }}</span>
             </div>
             <div class="stat-item">
               <span class="stat-label">Confirmed</span>
               <span class="stat-value success">{{
-                stats()?.confirmedCount ?? 0
-              }}</span>
+                  stats()?.confirmedCount ?? 0
+                }}</span>
             </div>
             <div class="stat-item">
               <span class="stat-label">Declined</span>
               <span class="stat-value error">{{
-                stats()?.declinedCount ?? 0
-              }}</span>
+                  stats()?.declinedCount ?? 0
+                }}</span>
             </div>
             <div class="stat-item">
               <span class="stat-label">Views</span>
               <span class="stat-value">{{
-                stats()?.viewsCount ?? 0
-              }}</span>
+                  stats()?.viewsCount ?? 0
+                }}</span>
             </div>
           </div>
 
-          <mat-divider />
+          <mat-divider/>
 
           <h4 class="section-title">Evaluated</h4>
           @if (evaluatedApplications().length === 0) {
@@ -124,7 +148,7 @@
                           {{ app.motivation }}
                         </div>
                       </div>
-                      <app-chip [status]="app.status!" />
+                      <app-chip [status]="app.status!"/>
                     </div>
                   </mat-card-content>
                 </mat-card>
