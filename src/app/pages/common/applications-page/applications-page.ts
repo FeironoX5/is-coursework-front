@@ -40,6 +40,7 @@ import { NgTemplateOutlet } from '@angular/common';
 import { StatusBadgeComponent } from '../../../components/chip.components';
 import { MatFormField, MatLabel } from '@angular/material/input';
 import { MatOption, MatSelect } from '@angular/material/select';
+import type { MatSelectChange } from '@angular/material/select';
 import { ResidenceProgramService } from '../../../services/residence-program.service';
 import { ExpertService } from '../../../services/expert.service';
 
@@ -107,6 +108,7 @@ export class ApplicationsPage implements OnInit {
 
   // expert
   protected expertPrograms = signal<ProgramPreviewDto[]>([]);
+  protected expertSelectedProgramId = signal<number | null>(null);
   protected expertApplications = signal<ApplicationDto[]>([]);
   protected evaluatingApp = signal<ApplicationDto | null>(null);
 
@@ -154,7 +156,7 @@ export class ApplicationsPage implements OnInit {
       this.expertService.getMyPrograms().subscribe((p) => {
         this.expertPrograms.set(p.content);
         if (p.content.length > 0) {
-          this.selectedProgramId.set(p.content[0].id!);
+          this.expertSelectedProgramId.set(p.content[0].id!);
           this.loadExpertApplications();
         } else {
           this.loading.set(false);
@@ -175,7 +177,7 @@ export class ApplicationsPage implements OnInit {
   }
 
   loadExpertApplications() {
-    const programId = this.selectedProgramId();
+    const programId = this.expertSelectedProgramId();
     if (programId === null) return;
 
     this.loading.set(true);
@@ -186,6 +188,33 @@ export class ApplicationsPage implements OnInit {
         this.expertApplications.set(p.content);
         this.loading.set(false);
       });
+  }
+
+  onExpertProgramChange(event: MatSelectChange) {
+    this.expertSelectedProgramId.set(event.value);
+    this.loadExpertApplications();
+  }
+
+  unassignFromSelectedProgram() {
+    const programId = this.expertSelectedProgramId();
+    if (programId === null) return;
+
+    this.expertService.unassignMeFromProgram(programId).subscribe(() => {
+      this.snackBar.open('You left the program', 'Close', {
+        duration: 2000,
+      });
+
+      this.expertPrograms.update((programs) =>
+        programs.filter((program) => program.id !== programId)
+      );
+      this.expertApplications.set([]);
+
+      const nextProgram = this.expertPrograms()[0]?.id ?? null;
+      this.expertSelectedProgramId.set(nextProgram);
+      if (nextProgram !== null) {
+        this.loadExpertApplications();
+      }
+    });
   }
 
   loadAdminApplications() {

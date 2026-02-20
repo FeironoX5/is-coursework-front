@@ -14,6 +14,18 @@
 .full-table {
   width: 100%;
 }
+
+.expert-controls {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.program-selector {
+  min-width: 320px;
+}
+
 .motivation-cell {
   max-width: 240px;
   white-space: nowrap;
