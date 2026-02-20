@@ -101,7 +101,6 @@ import { artDirectionLabel, formatDate } from '../formatters';
       .description {
         margin: 12px 0 0;
         font-size: 13px;
-        color: rgba(0, 0, 0, 0.6);
         display: -webkit-box;
         -webkit-line-clamp: 3;
         -webkit-box-orient: vertical;

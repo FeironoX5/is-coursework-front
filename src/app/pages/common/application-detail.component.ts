@@ -279,7 +279,6 @@ export interface ApplicationDetailData {
       .motivation {
         white-space: pre-line;
         line-height: 1.6;
-        color: rgba(0, 0, 0, 0.74);
       }
 
       h4 {
@@ -300,7 +299,6 @@ export interface ApplicationDetailData {
       .label {
         font-weight: 500;
         min-width: 100px;
-        color: rgba(0, 0, 0, 0.54);
       }
 
       .works-grid {
@@ -310,7 +308,6 @@ export interface ApplicationDetailData {
       }
 
       .empty-text {
-        color: rgba(0, 0, 0, 0.38);
         font-size: 14px;
         padding: 24px;
         text-align: center;
@@ -333,7 +330,6 @@ export interface ApplicationDetailData {
       }
       .eval-comment {
         margin: 0;
-        color: rgba(0, 0, 0, 0.6);
         font-size: 14px;
       }
 

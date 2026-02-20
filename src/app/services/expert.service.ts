@@ -100,7 +100,7 @@ export class ExpertService {
   getExpertsByProgram(
     programId: number,
     pageable?: Pageable
-  ): Observable<PageUserDto> {
+  ): Observable<PageExpertDto> {
     if (this.mode === 'test') {
       return of(
         fakePage([
@@ -123,8 +123,8 @@ export class ExpertService {
         ])
       );
     }
-    return this.http.get<PageUserDto>(
-      `${BASE}/programs/${programId}`,
+    return this.http.get<PageExpertDto>(
+      `/api/programs/${programId}/experts`,
       { params: toHttpParams(pageable) }
     );
   }

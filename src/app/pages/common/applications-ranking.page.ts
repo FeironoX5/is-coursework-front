@@ -270,14 +270,12 @@ interface RankedApplication {
       .quota-label {
         display: block;
         font-size: 12px;
-        color: rgba(0, 0, 0, 0.54);
         margin-bottom: 4px;
       }
       .quota-value {
         display: block;
         font-size: 24px;
         font-weight: 600;
-        color: rgba(0, 0, 0, 0.87);
       }
       .quota-value.highlight {
         color: #7c4dff;
@@ -285,7 +283,6 @@ interface RankedApplication {
 
       .ranking-table {
         width: 100%;
-        background: white;
         border-radius: 4px;
       }
 
@@ -299,7 +296,6 @@ interface RankedApplication {
 
       .rank-cell {
         font-weight: 700;
-        color: rgba(0, 0, 0, 0.54);
       }
 
       .score-cell {
@@ -308,7 +304,6 @@ interface RankedApplication {
       .score-badge {
         display: inline-block;
         padding: 4px 12px;
-        background: #e8f5e9;
         color: #2e7d32;
         border-radius: 12px;
         font-size: 14px;
