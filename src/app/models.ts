@@ -485,6 +485,7 @@ export interface ProgramPreviewDto {
   residenceId?: number;
   title?: string;
   deadlineApply?: string;
+  isPublished?: boolean;
 }
 
 export interface ProgramDto {

@@ -169,7 +169,8 @@ const CREATE_PROGRAM_FIELDS: FieldConfig[] = [
             <th mat-header-cell *matHeaderCellDef>Published</th>
             <td mat-cell *matCellDef="let p">
               <mat-slide-toggle
-                [checked]="publishedIds().has(p.id)"
+                [checked]="p.isPublished ?? false"
+                [disabled]="isPublishing(p.id)"
                 color="primary"
                 (change)="togglePublish(p, $event.checked)"
               />
@@ -237,7 +238,7 @@ export class ResidenceProgramsPage implements OnInit {
 
   protected loading = signal(true);
   protected programs = signal<ProgramPreviewDto[]>([]);
-  protected publishedIds = signal<Set<number>>(new Set());
+  protected publishingIds = signal<Set<number>>(new Set());
   protected showCreate = signal(false);
 
   protected readonly createFields = CREATE_PROGRAM_FIELDS;
@@ -272,20 +273,51 @@ export class ResidenceProgramsPage implements OnInit {
   }
 
   togglePublish(p: ProgramPreviewDto, publish: boolean) {
+    if (!p.id || this.isPublishing(p.id)) return;
+
+    this.publishingIds.update((ids) => {
+      const next = new Set(ids);
+      next.add(p.id!);
+      return next;
+    });
+
     const action = publish
       ? this.programSvc.publishProgram(p.id!)
       : this.programSvc.unpublishProgram(p.id!);
-    action.subscribe(() => {
-      this.publishedIds.update((ids) => {
-        const next = new Set(ids);
-        publish ? next.add(p.id!) : next.delete(p.id!);
-        return next;
-      });
-      this.snackBar.open(
-        publish ? 'Published' : 'Unpublished',
-        'Close',
-        { duration: 1500 }
-      );
+    action.subscribe({
+      next: () => {
+        this.programs.update((programs) =>
+          programs.map((program) =>
+            program.id === p.id
+              ? { ...program, isPublished: publish }
+              : program
+          )
+        );
+        this.snackBar.open(
+          publish ? 'Published' : 'Unpublished',
+          'Close',
+          { duration: 1500 }
+        );
+      },
+      error: () => {
+        this.publishingIds.update((ids) => {
+          const next = new Set(ids);
+          next.delete(p.id!);
+          return next;
+        });
+      },
+      complete: () => {
+        this.publishingIds.update((ids) => {
+          const next = new Set(ids);
+          next.delete(p.id!);
+          return next;
+        });
+      },
     });
+  }
+
+  isPublishing(programId?: number): boolean {
+    if (!programId) return false;
+    return this.publishingIds().has(programId);
   }
 }
