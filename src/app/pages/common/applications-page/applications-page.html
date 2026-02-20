@@ -211,40 +211,33 @@
         }
       }
 
-      <!-- Evaluation Dialog -->
+      <!-- Evaluation block -->
       @if (evaluatingApp() !== null) {
-        <div class="dialog-overlay" (click)="cancelEvaluate()">
-          <mat-card
-            class="eval-dialog"
-            (click)="$event.stopPropagation()"
-          >
-            <mat-card-header>
-              <mat-card-title
-                >Evaluate Application #{{
-                  evaluatingApp()!.id
-                }}</mat-card-title
-              >
-            </mat-card-header>
-            <mat-card-content>
-              <app-dynamic-form
-                #evaluateForm
-                [formConfig]="evaluateFields"
-              />
-            </mat-card-content>
-            <mat-card-actions>
-              <button
-                mat-flat-button
-                color="primary"
-                (click)="submitEvaluation()"
-              >
-                Submit
-              </button>
-              <button mat-button (click)="cancelEvaluate()">
-                Cancel
-              </button>
-            </mat-card-actions>
-          </mat-card>
-        </div>
+        <mat-card class="eval-block">
+          <mat-card-header>
+            <mat-card-title
+              >Evaluate application #{{ evaluatingApp()!.id }}</mat-card-title
+            >
+          </mat-card-header>
+          <mat-card-content>
+            <app-dynamic-form
+              #evaluateForm
+              [formConfig]="evaluateFields"
+            />
+          </mat-card-content>
+          <mat-card-actions>
+            <button
+              mat-flat-button
+              color="primary"
+              (click)="submitEvaluation()"
+            >
+              Save evaluation
+            </button>
+            <button mat-button (click)="cancelEvaluate()">
+              Cancel
+            </button>
+          </mat-card-actions>
+        </mat-card>
       }
     }
 

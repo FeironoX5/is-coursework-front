@@ -33,17 +33,6 @@
   text-overflow: ellipsis;
 }
 
-.dialog-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-.eval-dialog {
-  width: 100%;
-  max-width: 440px;
-  margin: 24px;
+.eval-block {
+  margin-top: 20px;
 }

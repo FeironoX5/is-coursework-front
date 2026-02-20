@@ -115,8 +115,8 @@ export class ApplicationService {
 
   // ── Queries by program (CORRECTED) ────────────────────────
 
-  /** GET /api/applications/programs/{programId} — Expert's unevaluated applications */
-  getUnevaluatedApplications(
+  /** GET /api/applications/programs/{programId} — Expert applications for selected program */
+  getApplicationsByProgram(
     programId: number,
     pageable?: Pageable
   ): Observable<PageApplicationDto> {
@@ -126,6 +126,14 @@ export class ApplicationService {
       `${BASE}/programs/${programId}`,
       { params: toHttpParams(pageable) }
     );
+  }
+
+  /** @deprecated use getApplicationsByProgram */
+  getUnevaluatedApplications(
+    programId: number,
+    pageable?: Pageable
+  ): Observable<PageApplicationDto> {
+    return this.getApplicationsByProgram(programId, pageable);
   }
 
   /** GET /api/applications/programs/evaluated/{programId} — Residence admin's evaluated applications */

@@ -183,7 +183,7 @@ export class ApplicationsPage implements OnInit {
     this.loading.set(true);
     // GET /api/applications/programs/{programId} - returns unevaluated applications for current expert
     this.applicationService
-      .getUnevaluatedApplications(programId)
+      .getApplicationsByProgram(programId)
       .subscribe((p) => {
         this.expertApplications.set(p.content);
         this.loading.set(false);
@@ -264,6 +264,9 @@ export class ApplicationsPage implements OnInit {
   }
 
   submitEvaluation() {
+    const evaluatingApp = this.evaluatingApp();
+    if (!evaluatingApp?.id) return;
+
     const form = this.evaluateForm();
     if (!form?.valid) {
       form?.markAllTouched();
@@ -272,7 +275,7 @@ export class ApplicationsPage implements OnInit {
 
     this.applicationService
       .evaluateApplication(
-        this.evaluatingApp()!.id!,
+        evaluatingApp.id,
         form.values as ApplicationEvaluationCreateDto
       )
       .subscribe(() => {
